@@ -11,28 +11,41 @@ import random
 import monsters
 
 
-
+# prompt for and add character stats to json file
 def add_character_stats():
-    with open('characters.json', 'r+') as character_file:
-        characters = json.load(character_file)
+    # read current character stats in json dictionary for
+    with open('characters.json', 'r') as file:
+        characters = json.load(file)
 
-        name = str(input('Enter character name: \n'))
-        armorClass = int(input('Enter armor class: \n'))
-        initiative = int(input('Enter initiative: \n'))
-        hitPoints = int(input('Enter HP: \n'))
-        attackHit = int(input('Enter attack hit: \n'))
-        damageDice = int(input('Enter damage dice number: \n'))
-        damageBonus = int(input('Enter damage bonus: \n'))
-        cure = int(input('Enter cure: \n'))
-        numAttacks = int(input('Enter number of attacks: \n'))
+    # prompt for character stats
+    name = str(input('Enter character name: \n'))
+    armor_class = input('Enter armor class: \n')
+    initiative = input('Enter initiative: \n')
+    hit_points = input('Enter HP: \n')
+    attack_hit = input('Enter attack hit: \n')
+    damage_dice = input('Enter damage dice number: \n')
+    damage_bonus = input('Enter damage bonus: \n')
+    cure = input('Enter cure: \n')
+    num_attacks = input('Enter number of attacks: \n')
 
-        characters = {'armorClass': armorClass, 'initiative': initiative, 'hitPoints': hitPoints,
-                            'attackHit': attackHit, 'damageDice': damageDice, 'damageBonus': damageBonus,
-                            'cure': cure, 'numAttacks': numAttacks}
+    # add to json
+    characters[name] = {
+        "armor_class": armor_class,
+        "initiative": initiative,
+        "hit_points": hit_points,
+        "attack_hit": attack_hit,
+        "damage_dice": damage_dice,
+        "damage_bonus": damage_bonus,
+        "cure": cure,
+        "num_attacks": num_attacks
+    }
 
-        character_file.truncate(0)
-        character_file.writelines(json.dumps(characters))
+    # delete the old data and write the new
+    with open('characters.json', 'r+') as file:
+        file.truncate(0)
+        file.write(json.dumps(characters))
 
+    return
 
 
 # roll a die with a given amount of sides
