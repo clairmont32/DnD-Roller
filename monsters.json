@@ -1,6 +1,6 @@
 {
   "vampireSpawn": {
-    "armorCLass": 15,
+    "armorClass": 15,
     "initiative": 0,
     "hitPoints": 82,
     "attackHit": 6,
