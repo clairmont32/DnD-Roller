@@ -1,3 +1,3 @@
 ## DnD-Roller ##
 
-A text-based character stat manager and battle simulator that is being developed for a friend.
+A text-based character stat manager and battle simulator that is being developed for a friend's discord D&D game
