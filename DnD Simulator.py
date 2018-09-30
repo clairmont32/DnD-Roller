@@ -270,9 +270,12 @@ def main():
             exit(print('Bye bye!'))
         else:
             menu_entry = int(menu_entry)
+
+            # add character
             if menu_entry == 1:
                 add_character()
 
+            # get a stat or update one
             elif menu_entry == 2 or menu_entry == 3:
                 character_name = input('Enter character name: \n')
                 character_stat = input('Enter character stat: \n')
@@ -285,9 +288,11 @@ def main():
                     print(change_character_stat(character_name, character_stat, new_stat))
                     print('Done')
 
+            # add monster
             if menu_entry == 4:
                 add_monster()
 
+            # get a stat or update one
             elif menu_entry == 5 or menu_entry == 6:
                 monster_name = input('Enter monster name: \n')
                 monster_stat = input('Enter monster stat: \n')
@@ -300,10 +305,12 @@ def main():
                     change_monster_stat(monster_name, monster_stat, new_stat)
                     print('Done')
 
+            # single die roll
             if menu_entry == 7:
                 sides = int(input('Enter amount of sides: \n'))
                 print(roll_die(sides))
 
+            # multi-die roll
             if menu_entry == 8:
                 total_dice = int(input('Number of dice to throw? \n'))
                 sides = int(input('Enter amount of sides: \n'))
@@ -311,6 +318,7 @@ def main():
                     print(roll_die(sides))
                     total_dice -= 1
 
+            # simulate a battle (still half broken HP updates?)
             if menu_entry == 9:
                 character_name = input('Enter character name: \n')
                 monster_name = input('Enter monster name: \n')
