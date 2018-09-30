@@ -8,10 +8,9 @@ Each roll for each actor must be displayed for QA checks and end-user curiosity 
 import os
 import json
 import random
-import monsters
 
 
-def __init__():
+def file_checks():
     cwd = os.getcwd()
     if os.path.exists('characters.json') is False:
         print('Could not find characters.json in '.format(cwd))
@@ -21,7 +20,7 @@ def __init__():
 
 
 # prompt for and add character stats to json file
-def add_change_character():
+def add_character():
     # read current character stats in json dictionary for
     with open('characters.json', 'r') as file:
         characters = json.load(file)
@@ -50,7 +49,7 @@ def add_change_character():
     }
 
     # delete the old data and write the new
-    with open('characters.json', 'r+') as file:
+    with open('characters.json', 'w') as file:
         file.truncate(0)
         file.write(json.dumps(characters))
 
@@ -75,8 +74,40 @@ def get_character_stat(name, stat):
         print('{!s} does not have {!s}'.format(name, stat))
 
 
+# update character stat due to combat or other influence 
+def auto_change_character_stat(name, stat, new_stat):
+    with open('characters.json', 'r') as characters_file:
+        characters = json.load(characters_file)
+
+    try:
+        characters[name].update({stat: new_stat})
+    except KeyError as ker:
+        print('Could not update {!s}'.format(new_stat))
+        print(ker)
+
+    with open('characters.json', 'w') as characters_file:
+        characters_file.truncate(0)
+        characters_file.write(json.dumps(characters))
+
+
+# update monster stat due to combat or other influence 
+def auto_change_monster_stat(name, stat, new_stat):
+    with open('monsters.json', 'r') as monsters_file:
+        monsters = json.load(monsters_file)
+
+    try:
+        monsters[name].update({stat: new_stat})
+    except KeyError as ker:
+        print('Could not update {!s}'.format(new_stat))
+        print(ker)
+
+    with open('monsters.json', 'w') as monsters_file:
+        monsters_file.truncate(0)
+        monsters_file.write(json.dumps(monsters))
+
+
 # prompt for and add monster stats to json file
-def add_change_monster():
+def add_monster():
     # read current monster stats in json dictionary for
     with open('monsters.json', 'r') as file:
         monsters = json.load(file)
@@ -103,7 +134,7 @@ def add_change_monster():
     }
 
     # delete the old data and write the new
-    with open('monsters.json', 'r+') as file:
+    with open('monsters.json', 'w') as file:
         file.truncate(0)
         file.write(json.dumps(monsters))
 
@@ -134,29 +165,86 @@ def roll_die(sides):
     return result
 
 
+# compare initiative to see who goes first
+def battle_simulator(character_name, monster_name):
+    char_initiative = get_character_stat(character_name, 'initiative')
+    mons_initiative = get_monster_stat(monster_name, 'initiative')
+
+    if mons_initiative > char_initiative:
+        do_monster_attack(character_name, monster_name)
+        do_character_attack(character_name, monster_name)
+
+    elif mons_initiative < char_initiative:
+        do_character_attack(character_name, monster_name)
+        do_monster_attack(character_name, monster_name)
+
+    elif mons_initiative == char_initiative:
+        do_character_attack(character_name, monster_name)
+        do_monster_attack(character_name, monster_name)
+
+
+# perform single character attack
 def do_character_attack(character_name, monster_name):
-    char_hit_points = get_character_stat(character_name, 'hitPoints')
-    char_damage_bonus = get_character_stat(character_name, 'damageBonus')
-    char_attack_hit = get_character_stat(character_name, 'attackHit')
-    char_damage_dice = get_character_stat(character_name, 'damageDice')
+    with open('monsters.json', 'r') as monsters_file:
+        all_mons = json.load(monsters_file)
 
-    monster_damage_bonus = get_monster_stat(monster_name, 'damageBonus')
-    monster_hit_points = get_monster_stat(monster_name, 'hitPoints')
-    monster_armor_class = get_monster_stat(monster_name, 'armorClass')
+    with open('characters.json', 'r') as characters_file:
+        all_chars = json.load(characters_file)
 
+    # extracting only the profiles we care about
+    mons = all_mons[monster_name]
+    char = all_chars[character_name]
+
+    # roll d20
     char_attack_roll = roll_die(20)
-    if (char_attack_roll + char_attack_hit) > monster_armor_class:
-        print('Hit for {!s} damage'.format(char_damage_dice))
-        monster_hit_points -= char_damage_dice
-        print('{!s} has {!s} HP left.'.format(monster_name, monster_hit_points))
-        if monster_hit_points <= 0:
-            print('{!s} has been killed!'.format(monster_name))
-            print('{!s} has {!s} health left.'.format(character_name, char_hit_points))
-            return
 
+    if char['hitPoints'] <= 0:
+        print('{!s} has been killed!'.format(character_name))
+        exit(0)
+
+    # compare if roll stats are greater than character's armor, subtract damage from players health
+    # perform health check and display new values
+    elif (char_attack_roll + char['attackHit']) > mons['armorClass']:
+        print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, char['damageDice']))
+        new_char_health = mons['hitPoints'] - char['damageDice']
+        auto_change_monster_stat('vampireSpawn', 'hitPoints', new_char_health)
+        print('{!s} has {!s} HP left.'.format(monster_name, new_char_health))
+
+    # failed it
     else:
         print('{!s} did not hit above {!s}\'s armor class!'.format(character_name, monster_name))
 
 
-do_character_attack('jon', 'vampireSpawn')
+# perform single monster attack
+def do_monster_attack(character_name, monster_name):
+    with open('monsters.json', 'r') as monsters_file:
+        all_mons = json.load(monsters_file)
 
+    with open('characters.json', 'r') as characters_file:
+        all_chars = json.load(characters_file)
+
+    # extracting only the profiles we care about
+    mons = all_mons[monster_name]
+    char = all_chars[character_name]
+
+    # roll d20
+    mons_attack_roll = roll_die(20)
+
+    if mons['hitPoints'] <= 0:
+        print('{!s} has been killed!'.format(monster_name))
+        exit(0)
+
+    # compare if roll stats are greater than character's armor, subtract damage from players health
+    # perform health check and display new values
+    elif (mons_attack_roll + mons['attackHit']) > char['armorClass']:
+        print('{!s} hit {!s} for {!s} damage'.format(monster_name, character_name, mons['damageDice']))
+        new_char_health = char['hitPoints'] - mons['damageDice']
+        auto_change_character_stat('jon', 'hitPoints', new_char_health)
+        print('{!s} has {!s} HP left.'.format(character_name, new_char_health))
+
+    # failed it
+    else:
+        print('{!s} did not hit above {!s}\'s armor class!'.format(monster_name, character_name))
+
+
+battle_simulator('jon', 'vampireSpawn')
