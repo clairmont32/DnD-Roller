@@ -75,7 +75,7 @@ def get_character_stat(name, stat):
 
 
 # update character stat due to combat or other influence 
-def auto_change_character_stat(name, stat, new_stat):
+def change_character_stat(name, stat, new_stat):
     with open('characters.json', 'r') as characters_file:
         characters = json.load(characters_file)
 
@@ -91,7 +91,7 @@ def auto_change_character_stat(name, stat, new_stat):
 
 
 # update monster stat due to combat or other influence 
-def auto_change_monster_stat(name, stat, new_stat):
+def change_monster_stat(name, stat, new_stat):
     with open('monsters.json', 'r') as monsters_file:
         monsters = json.load(monsters_file)
 
@@ -207,7 +207,7 @@ def do_character_attack(character_name, monster_name):
     elif (char_attack_roll + char['attackHit']) > mons['armorClass']:
         print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, char['damageDice']))
         new_char_health = mons['hitPoints'] - char['damageDice']
-        auto_change_monster_stat('vampireSpawn', 'hitPoints', new_char_health)
+        change_character_stat(character_name, 'hitPoints', new_char_health)
         print('{!s} has {!s} HP left.'.format(monster_name, new_char_health))
 
     # failed it
@@ -239,7 +239,7 @@ def do_monster_attack(character_name, monster_name):
     elif (mons_attack_roll + mons['attackHit']) > char['armorClass']:
         print('{!s} hit {!s} for {!s} damage'.format(monster_name, character_name, mons['damageDice']))
         new_char_health = char['hitPoints'] - mons['damageDice']
-        auto_change_character_stat('jon', 'hitPoints', new_char_health)
+        change_monster_stat(monster_name, 'hitPoints', new_char_health)
         print('{!s} has {!s} HP left.'.format(character_name, new_char_health))
 
     # failed it
@@ -247,4 +247,74 @@ def do_monster_attack(character_name, monster_name):
         print('{!s} did not hit above {!s}\'s armor class!'.format(monster_name, character_name))
 
 
-battle_simulator('jon', 'vampireSpawn')
+# setup and start main menu while loop
+def main():
+    file_checks()
+
+    print('\nPress \'q\' to quit or go back.')
+    while True:
+        print('What would you like to do? \n')
+        print('1) Add a new character')
+        print('2) Get a character\'s specific stat')
+        print('3) Update a character\'s stats')
+        print('4) Add a new monster')
+        print('5) Get a monster\'s specific stat')
+        print('6) Update a monster\'s stats')
+        print('7) Roll a single dX')
+        print('8) Roll XdX')
+        print('9) Battle simulator')
+        print('q) Quit \n')
+
+        menu_entry = input()
+        if menu_entry == 'q':
+            exit(print('Bye bye!'))
+        else:
+            menu_entry = int(menu_entry)
+            if menu_entry == 1:
+                add_character()
+
+            elif menu_entry == 2 or menu_entry == 3:
+                character_name = input('Enter character name: \n')
+                character_stat = input('Enter character stat: \n')
+
+                if menu_entry == 2:
+                    print(get_character_stat(character_name, character_stat))
+
+                elif menu_entry == 3:
+                    new_stat = int(input('Enter new stat value: \n'))
+                    print(change_character_stat(character_name, character_stat, new_stat))
+                    print('Done')
+
+            if menu_entry == 4:
+                add_monster()
+
+            elif menu_entry == 5 or menu_entry == 6:
+                monster_name = input('Enter monster name: \n')
+                monster_stat = input('Enter monster stat: \n')
+
+                if menu_entry == 5:
+                    print(get_monster_stat(monster_name, monster_stat))
+
+                elif menu_entry == 6:
+                    new_stat = int(input('Enter new stat value: \n'))
+                    change_monster_stat(monster_name, monster_stat, new_stat)
+                    print('Done')
+
+            if menu_entry == 7:
+                sides = int(input('Enter amount of sides: \n'))
+                print(roll_die(sides))
+
+            if menu_entry == 8:
+                total_dice = int(input('Number of dice to throw? \n'))
+                sides = int(input('Enter amount of sides: \n'))
+                while total_dice > 0:
+                    print(roll_die(sides))
+                    total_dice -= 1
+
+            if menu_entry == 9:
+                character_name = input('Enter character name: \n')
+                monster_name = input('Enter monster name: \n')
+                battle_simulator(character_name, monster_name)
+
+
+main()
