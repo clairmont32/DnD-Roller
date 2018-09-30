@@ -56,6 +56,22 @@ def add_character():
     return
 
 
+# return a list of character names
+def get_character_names():
+    with open('characters.json', 'r') as character_file:
+        characters = json.load(character_file)
+        names = [name for name in characters.keys()]
+        return names
+
+
+# return a list of stats for a given character
+def list_character_stats(name):
+    with open('characters.json', 'r') as character_file:
+        characters = json.load(character_file)
+        stats = [stat for stat in characters[name].keys()]
+        return stats
+
+
 # return single stat from a character
 def get_character_stat(name, stat):
     with open('characters.json', 'r') as characters_file:

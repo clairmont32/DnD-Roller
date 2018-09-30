@@ -1,1 +1,23 @@
-{"jon": {"armorClass": 13, "initiative": 3, "hitPoints": 38, "attackHit": 5, "damageDice": 8, "damageBonus": 2, "cure": 4, "numAttacks": 1}}
+{
+  "jon": {
+    "armorClass": 13,
+    "initiative": 3,
+    "hitPoints": 38,
+    "attackHit": 5,
+    "damageDice": 8,
+    "damageBonus": 2,
+    "cure": 4,
+    "numAttacks": 1,
+    "proficiency": 3
+  },
+  "matt": {
+    "armorClass": 1,
+    "initiative": 1,
+    "hitPoints": 194,
+    "attackHit": 1,
+    "damageDice": 1,
+    "damageBonus": 1,
+    "cure": 1,
+    "numAttacks": 1
+  }
+}
