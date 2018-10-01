@@ -225,7 +225,7 @@ def do_character_attack(character_name, monster_name):
         print('Character attack hit: {!s}'.format(char_attack_hit))
         #
         # ADD THE MODIFIER DAMAGE HERE
-        attack_roll = roll_die(char['damageDice'])  # ADD THE MODIFIER TYPE DAMAGE HERE
+        attack_roll = roll_die(char['damageDice'] + char['damageBonus'])  # ADD THE MODIFIER TYPE DAMAGE HERE
         print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, attack_roll))
         new_char_health = mons['hitPoints'] - attack_roll
         change_character_stat(character_name, 'hitPoints', new_char_health)
