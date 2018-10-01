@@ -212,19 +212,24 @@ def do_character_attack(character_name, monster_name):
     char = all_chars[character_name]
 
     # roll d20
-    char_attack_roll = roll_die(20)
+    char_hit_roll = roll_die(20)
 
     if char['hitPoints'] <= 0:
         print('{!s} has been killed!'.format(character_name))
-        exit(0)
+        return
 
     # compare if roll stats are greater than character's armor, subtract damage from players health
     # perform health check and display new values
-    elif (char_attack_roll + char['attackHit']) > mons['armorClass']:
-        print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, char['damageDice']))
-        new_char_health = mons['hitPoints'] - char['damageDice']
+    char_attack_hit = char_hit_roll + char['attackHit'] + char['proficiency']
+    if char_attack_hit > mons['armorClass']:
+        print('Character attack hit: {!s}'.format(char_attack_hit))
+        #
+        # ADD THE MODIFIER DAMAGE HERE
+        attack_roll = roll_die(char['damageDice'])  # ADD THE MODIFIER TYPE DAMAGE HERE
+        print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, attack_roll))
+        new_char_health = mons['hitPoints'] - attack_roll
         change_character_stat(character_name, 'hitPoints', new_char_health)
-        print('{!s} has {!s} HP left.'.format(monster_name, new_char_health))
+        print('{!s} has {!s} HP left. \n'.format(monster_name, new_char_health))
 
     # failed it
     else:
@@ -244,19 +249,22 @@ def do_monster_attack(character_name, monster_name):
     char = all_chars[character_name]
 
     # roll d20
-    mons_attack_roll = roll_die(20)
+    mons_hit_roll = roll_die(20)
 
     if mons['hitPoints'] <= 0:
         print('{!s} has been killed!'.format(monster_name))
-        exit(0)
+        return
 
     # compare if roll stats are greater than character's armor, subtract damage from players health
     # perform health check and display new values
-    elif (mons_attack_roll + mons['attackHit']) > char['armorClass']:
-        print('{!s} hit {!s} for {!s} damage'.format(monster_name, character_name, mons['damageDice']))
-        new_char_health = char['hitPoints'] - mons['damageDice']
+    monster_attack_hit = mons_hit_roll + mons['attackHit']
+    if monster_attack_hit > char['armorClass']:
+        print('Monster attack hit: {!s}'.format(monster_attack_hit))
+        attack_roll = roll_die(mons['damageDice'])
+        print('{!s} hit {!s} for {!s} damage'.format(monster_name, character_name, attack_roll))
+        new_char_health = char['hitPoints'] - attack_roll
         change_monster_stat(monster_name, 'hitPoints', new_char_health)
-        print('{!s} has {!s} HP left.'.format(character_name, new_char_health))
+        print('{!s} has {!s} HP left. \n'.format(character_name, new_char_health))
 
     # failed it
     else:
@@ -293,15 +301,20 @@ def main():
 
             # get a stat or update one
             elif menu_entry == 2 or menu_entry == 3:
-                character_name = input('Enter character name: \n')
+                character_name = input('Enter character name: \n').lower()
                 character_stat = input('Enter character stat: \n')
 
                 if menu_entry == 2:
                     print(get_character_stat(character_name, character_stat))
 
                 elif menu_entry == 3:
-                    new_stat = int(input('Enter new stat value: \n'))
-                    print(change_character_stat(character_name, character_stat, new_stat))
+                    try:
+                        new_stat = int(input('Enter new stat value: \n'))
+                    except ValueError:
+                        print('Enter a number, not a string.')
+                        main()
+                    # attempt to add the stat
+                    change_character_stat(character_name, character_stat, new_stat)
                     print('Done')
 
             # add monster
@@ -310,14 +323,19 @@ def main():
 
             # get a stat or update one
             elif menu_entry == 5 or menu_entry == 6:
-                monster_name = input('Enter monster name: \n')
+                monster_name = input('Enter monster name: \n').lower()
                 monster_stat = input('Enter monster stat: \n')
 
                 if menu_entry == 5:
                     print(get_monster_stat(monster_name, monster_stat))
 
                 elif menu_entry == 6:
-                    new_stat = int(input('Enter new stat value: \n'))
+                    try:
+                        new_stat = int(input('Enter new stat value: \n'))
+                    except ValueError:
+                        print('Enter a number, not a string.')
+                        main()
+                    # attempt to add the stat
                     change_monster_stat(monster_name, monster_stat, new_stat)
                     print('Done')
 
