@@ -17,6 +17,7 @@ class Characters:
 		with open('Characters.json', 'r') as characters_file:
 			self.characters = json.load(characters_file)
 
+	# creates an empty character in characters.json
 	def create_character(self, name):
 		self.characters[name] = {}
 
@@ -26,6 +27,7 @@ class Characters:
 
 		return
 
+	# removes a character from characters.json
 	def remove_character(self, name):
 		try:
 			del self.characters[name]
@@ -38,34 +40,44 @@ class Characters:
 
 		return
 
+	# lists current character names
 	def list_characters(self):
 		names = [name for name in self.characters.keys()]
 		for name in names:
 			print(name)
 
+	# prompt for character stats
 	def add_stats(self):
+		name = str(input('Enter character name: \n'))
+		print('Enter numeric values for the below stats- ')
 		while True:
 			try:
-				num_stats = int(input('How many stats do you want to add? \n'))
+				armor_class = int(input('Enter armor class: \n'))
+				initiative = int(input('Enter initiative: \n'))
+				hit_points = int(input('Enter HP: \n'))
+				attack_hit = int(input('Enter attack hit: \n'))
+				damage_dice = int(input('Damage die roll (1dX): \n'))
+				str_modifier = int(input('Enter strength modifier: \n'))
+				dex_modifier = int(input('Enter dexterity modifier: \n'))
+				cure = int(input('Enter cure: \n'))
+				num_attacks = int(input('Enter number of attacks: \n'))
+				proficiency = int(input('Enter proficiency bonus: \n'))
 				break
 			except ValueError:
-				print('Enter a number.')
+				print('You didn\'t enter a number!')
 
-		name = input('Name of character to add stats to: \n')
-
-		while num_stats > 0:
-			stat_name = input('Name of stat: \n')
-			stat_value = input('Value of stat: \n')
-			if stat_value.isdigit is False:
-				print('Enter a number for the stat value.')
-			else:
-				self.characters[name].updatae({stat_name: stat_value})
-				num_stats -= 1
+		# add to json
+		self.characters[name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
+		                         "attackHit": attack_hit, "damageDice": damage_dice, "strModifier": str_modifier,
+								 "dexModifier": dex_modifier, "cure": cure, "numAttacks": num_attacks,
+								 "proficiency": proficiency
+								 }
 
 		with open('characters.json', 'w') as characters_file:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
 
+	# lists stats for a given character
 	def list_stats(self, name):
 		try:
 			for stat in self.characters[name].keys():
@@ -75,6 +87,7 @@ class Characters:
 
 		return
 
+	# updates a current stat
 	def change_stat(self, name, stat, new_stat):
 		try:
 			self.characters[name].update({stat: new_stat})
