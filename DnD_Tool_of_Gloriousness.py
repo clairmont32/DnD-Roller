@@ -60,7 +60,7 @@ def add_character():
 def get_character_names():
     with open('characters.json', 'r') as character_file:
         characters = json.load(character_file)
-        names = [name for name in characters.keys()]
+        names = [name + '\n' for name in characters.keys()]
         return names
 
 
@@ -106,22 +106,6 @@ def change_character_stat(name, stat, new_stat):
         characters_file.write(json.dumps(characters))
 
 
-# update monster stat due to combat or other influence 
-def change_monster_stat(name, stat, new_stat):
-    with open('monsters.json', 'r') as monsters_file:
-        monsters = json.load(monsters_file)
-
-    try:
-        monsters[name].update({stat: new_stat})
-    except KeyError as ker:
-        print('Could not update {!s}'.format(new_stat))
-        print(ker)
-
-    with open('monsters.json', 'w') as monsters_file:
-        monsters_file.truncate(0)
-        monsters_file.write(json.dumps(monsters))
-
-
 # prompt for and add monster stats to json file
 def add_monster():
     # read current monster stats in json dictionary for
@@ -155,6 +139,22 @@ def add_monster():
         file.write(json.dumps(monsters))
 
     return
+
+
+# update monster stat due to combat or other influence
+def change_monster_stat(name, stat, new_stat):
+    with open('monsters.json', 'r') as monsters_file:
+        monsters = json.load(monsters_file)
+
+    try:
+        monsters[name].update({stat: new_stat})
+    except KeyError as ker:
+        print('Could not update {!s}'.format(new_stat))
+        print(ker)
+
+    with open('monsters.json', 'w') as monsters_file:
+        monsters_file.truncate(0)
+        monsters_file.write(json.dumps(monsters))
 
 
 # return single stat from a monster
