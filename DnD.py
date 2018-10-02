@@ -5,7 +5,6 @@ import random
 
 # means of interacting with characters in characters.json
 class Characters:
-
 	def __init__(self):
 		cwd = os.getcwd()
 		if os.path.exists('characters.json') is False:
@@ -96,9 +95,9 @@ class Characters:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
 
+
 # means of interacting with monsters in monsters.json
 class Monsters:
-
 	def __init__(self):
 		cwd = os.getcwd()
 
@@ -183,3 +182,4 @@ class Monsters:
 		with open('monsters.json', 'w') as monsters_file:
 			monsters_file.truncate(0)
 			monsters_file.write(json.dumps(self.monsters))
+
