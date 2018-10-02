@@ -99,4 +99,3 @@ class Characters:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
 
-

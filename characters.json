@@ -1,7 +1,4 @@
 {
-  "jon": {
-    "stat3": "10"
-  },
   "matt": {
     "armorClass": 1,
     "initiative": 1,
@@ -12,7 +9,9 @@
     "cure": 1,
     "numAttacks": 1
   },
-  "stat1": {
-    "4": "2"
+  "jon": {
+    "stat1": "2",
+    "stat2": "4",
+    "stat3": "8"
   }
 }
