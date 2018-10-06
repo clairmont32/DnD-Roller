@@ -183,3 +183,55 @@ class Monsters:
 			monsters_file.truncate(0)
 			monsters_file.write(json.dumps(self.monsters))
 
+
+class Battle:
+	def __init__(self, character_name, monster_name):
+		super(Characters, change_stat)
+		super(Monsters)
+		with open('characters.json', 'r') as characters_file:
+			characters = json.load(characters_file)
+			self.char = characters[character_name]
+		with open('monsters.json', 'r') as monsters_file:
+			monsters = json.load(monsters_file)
+			self.mons = monsters[monster_name]
+
+	def compare_initiative(self, character_name, monster_name):
+		char_initiative = self.char['initiative']
+		mons_initiative = self.mons['initiative']
+
+		if mons_initiative > char_initiative:
+			self.do_monster_attack(character_name, monster_name)
+			self.do_character_attack(character_name, monster_name)
+
+		elif mons_initiative < char_initiative:
+			self.do_character_attack(character_name, monster_name)
+			self.do_monster_attack(character_name, monster_name)
+
+		elif mons_initiative == char_initiative:
+			self.do_character_attack(character_name, monster_name)
+			self.do_monster_attack(character_name, monster_name)
+
+	def do_character_attack(self, character_name, monster_name):
+		# roll d20
+		char_hit_roll = roll_die(20)
+
+		if self.char['hitPoints'] <= 0:
+			print('{!s} has been killed!'.format(character_name))
+			return
+
+		# compare if roll stats are greater than character's armor, subtract damage from players health
+		# perform health check and display new values
+		char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
+		if char_attack_hit > self.mons['armorClass']:
+			print('Character attack hit: {!s}'.format(char_attack_hit))
+			#
+			# ADD THE MODIFIER DAMAGE HERE
+			attack_roll = roll_die(self.char['damageDice']) + self.char['damageBonus']  # ADD THE MODIFIER TYPE DAMAGE HERE
+			print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, attack_roll))
+			new_char_health = self.mons['hitPoints'] - attack_roll
+			change_stat(character_name, 'hitPoints', new_char_health)
+			print('{!s} has {!s} HP left. \n'.format(monster_name, new_char_health))
+
+		# failed it
+		else:
+			print('{!s} did not hit above {!s}\'s armor class!'.format(character_name, monster_name))
