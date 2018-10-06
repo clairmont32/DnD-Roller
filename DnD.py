@@ -186,7 +186,7 @@ class Monsters:
 
 class Battle:
 	def __init__(self, character_name, monster_name):
-		super(Characters, change_stat)
+		super(Characters)
 		super(Monsters)
 		with open('characters.json', 'r') as characters_file:
 			characters = json.load(characters_file)
@@ -229,7 +229,7 @@ class Battle:
 			attack_roll = roll_die(self.char['damageDice']) + self.char['damageBonus']  # ADD THE MODIFIER TYPE DAMAGE HERE
 			print('{!s} hit {!s} for {!s} damage'.format(character_name, monster_name, attack_roll))
 			new_char_health = self.mons['hitPoints'] - attack_roll
-			change_stat(character_name, 'hitPoints', new_char_health)
+			Characters.change_stat(character_name, 'hitPoints', new_char_health)
 			print('{!s} has {!s} HP left. \n'.format(monster_name, new_char_health))
 
 		# failed it
