@@ -200,6 +200,11 @@ class Battle:
 			monsters = json.load(monsters_file)
 			self.mons = monsters[monster_name]
 
+
+	def attack_aggressiveness(self, character_name):
+		# work in attack until health percentage
+		pass
+
 	def compare_initiative(self):
 		char_initiative = self.char['initiative']
 		mons_initiative = self.mons['initiative']
