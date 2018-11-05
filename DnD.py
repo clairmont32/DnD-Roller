@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os
 import json
 import random
@@ -10,7 +11,7 @@ class Characters:
 		if os.path.exists('characters.json') is False:
 			exit(print('Could not find characters.json in '.format(cwd)))
 
-		with open('Characters.json', 'r') as characters_file:
+		with open('characters.json', 'r') as characters_file:
 			self.characters = json.load(characters_file)
 		self.character_name = character_name
 
