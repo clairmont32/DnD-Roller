@@ -101,7 +101,7 @@ class Characters:
 
 # means of interacting with monsters in monsters.json
 class Monsters:
-	def __init__(self, monster_name):
+	def __init__(self):
 		cwd = os.getcwd()
 
 		if os.path.exists('monsters.json') is False:
@@ -110,40 +110,37 @@ class Monsters:
 		with open('monsters.json', 'r') as monsters_file:
 			self.monsters = json.load(monsters_file)
 
-		self.monster_name = monster_name
-
 	# creates an empty monster in monsters.json
-	def create_monster(self):
-		self.monsters[self.monster_name] = {}
+	def create_monster(self, monster_name):
+		self.monsters[monster_name] = {}
 
 		with open('monsters.json', 'w') as monsters_file:
 			monsters_file.truncate(0)
 			monsters_file.write(json.dumps(self.monsters))
-
+		add_stats(monster_name)
 		return
 
 	# removes a monster from monsters.json
-	def remove_monster(self):
+	def remove_monster(self, monster_name):
 		try:
-			del self.monsters[self.monster_name]
+			del self.monsters[monster_name]
 			with open('monsters.json', 'w') as monsters_file:
 				monsters_file.truncate(0)
 				monsters_file.write(json.dumps(self.monsters))
 
 		except KeyError:
-			print('{!s} does not have a monster profile saved!'.format(self.monster_name))
+			print('{!s} does not have a monster profile saved!'.format(monster_name))
 
 		return
 
 	# lists current monster names
-	def list_monsters(self):
+	def list_monsters(self, monster_name):
 		names = [name for name in self.monsters.keys()]
 		for name in names:
 			print(name)
 
 	# prompt for monster stats
-	def add_stats(self):
-		name = str(input('Enter monster name: \n'))
+	def add_stats(self, monster_name):
 		print('Enter numeric values for the below stats- ')
 		while True:
 			try:
@@ -165,21 +162,24 @@ class Monsters:
 		with open('monsters.json', 'w') as monsters_file:
 			monsters_file.truncate(0)
 			monsters_file.write(json.dumps(self.monsters))
+			
+		print('\n')
+		print('Stats added! \n')
 
 	# lists stats for a given monster
-	def list_stats(self):
+	def list_stats(self, monster_name):
 		try:
-			for stat in self.monsters[self.monster_name].keys():
+			for stat in self.monsters[monster_name].keys():
 				print(stat)
 		except KeyError:
-			print('{!s} does not have a monster profile saved!'.format(self.monster_name))
+			print('{!s} does not have a monster profile saved!'.format(monster_name))
 
 		return
 
 	# updates a current stat
-	def change_stat(self, stat, new_stat):
+	def change_stat(self, monster_name, stat, new_stat):
 		try:
-			self.monsters[self.monster_name].update({stat: new_stat})
+			self.monsters[monster_name].update({stat: new_stat})
 		except KeyError as ker:
 			print('Could not update {!s}'.format(new_stat))
 			print(ker)
