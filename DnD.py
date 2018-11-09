@@ -6,47 +6,45 @@ import random
 
 # means of interacting with characters in characters.json
 class Characters:
-	def __init__(self, character_name):
+	def __init__(self):
 		cwd = os.getcwd()
 		if os.path.exists('characters.json') is False:
 			exit(print('Could not find characters.json in '.format(cwd)))
 
 		with open('characters.json', 'r') as characters_file:
 			self.characters = json.load(characters_file)
-		self.character_name = character_name
 
 	# creates an empty character in characters.json
-	def create_character(self):
-		self.characters[self.character_name] = {}
+	def create_character(self, character_name):
+		self.characters[character_name] = {}
 
 		with open('characters.json', 'w') as characters_file:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
-
-		return
-
+		Characters.add_stats(self, character_name)
+        
+                                  
 	# removes a character from characters.json
-	def remove_character(self):
+	def remove_character(self, character_name):
 		try:
-			del self.characters[self.self.character_name]
+			del self.characters[character_name]
 			with open('characters.json', 'w') as characters_file:
 				characters_file.truncate(0)
 				characters_file.write(json.dumps(self.characters))
 
 		except KeyError:
-			print('{!s} does not have a character profile saved!'.format(self.character_name))
+			print('{!s} does not have a character profile saved!'.format(character_name))
 
 		return
 
 	# lists current character names
-	def list_characters(self):
+	def list_characters(self, character_name):
 		names = [name for name in self.characters.keys()]
 		for name in names:
 			print(name)
 
 	# prompt for character stats
-	def add_stats(self):
-		name = str(input('Enter character name: \n'))
+	def add_stats(self, character_name):
 		print('Enter numeric values for the below stats- ')
 		while True:
 			try:
@@ -65,7 +63,7 @@ class Characters:
 				print('You didn\'t enter a number!')
 
 		# add to json
-		self.characters[name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
+		self.characters[character_name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
 		                         "attackHit": attack_hit, "damageDice": damage_dice, "strModifier": str_modifier,
 								 "dexModifier": dex_modifier, "cure": cure, "numAttacks": num_attacks,
 								 "proficiency": proficiency
@@ -74,11 +72,14 @@ class Characters:
 		with open('characters.json', 'w') as characters_file:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
+       
+		print('\n')
+		print('Stats added. \n\n')
 
 	# lists stats for a given character
-	def list_stats(self):
+	def list_stats(self, character_name):
 		try:
-			for stat in self.characters[self.character_name].keys():
+			for stat in self.characters[character_name].keys():
 				print(stat)
 		except KeyError:
 			print('{!s} does not have a character profile saved!'.format(self.character_name))
@@ -86,9 +87,9 @@ class Characters:
 		return
 
 	# updates a current stat
-	def change_stat(self, stat, new_stat):
+	def change_stat(self, character_name, stat, new_stat):
 		try:
-			self.characters[self.character_name].update({stat: new_stat})
+			self.characters[character_name].update({stat: new_stat})
 		except KeyError as ker:
 			print('Could not update {!s}'.format(new_stat))
 			print(ker)
