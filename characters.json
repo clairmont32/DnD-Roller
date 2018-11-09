@@ -1,1 +1,1 @@
-{"jon": {"stat1": "2", "stat2": "4", "stat3": "8"}, "matt": {"attackHit": 1, "damageBonus": 1, "damageDice": 1, "hitPoints": 194, "cure": 1, "initiative": 1, "armorClass": 2, "numAttacks": 1}}
+{"jon": {"initiative": 4, "hitPoints": 3, "proficiency": 6, "cure": 10, "armorClass": 5, "numAttacks": 4, "damageDice": 1, "dexModifier": 7, "strModifier": 99, "attackHit": 2}, "matt": {"initiative": 6, "hitPoints": 7, "proficiency": 14, "cure": 12, "armorClass": 5, "numAttacks": 13, "damageDice": 9, "dexModifier": 11, "strModifier": 10, "attackHit": 8}}
