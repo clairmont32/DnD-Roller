@@ -203,10 +203,23 @@ class Battle:
 			self.mons = monsters[monster_name]
 
 
-	def attack_aggressiveness(self, character_name):
+	def attack_aggressiveness(self):
 		# work in attack until health percentage
+		print('Attack with what level of aggressiveness? \n')
+		print('1) Safe - 75% health \n')
+		print('2) Balnced - 50% health \n')
+		print('3) Aggressive - 25% health \n')
+		print('4) Custom - DM entered \n')
+		
+		aggro_input = int(input())
+		aggro = {1: .75, 2: .50, 3: .25, 4: aggro_input}
+		print('Battle will stop when the character reaches {!s}'.format(aggro[aggro_input]))
+		
+		return aggro[aggro_input]
+	
+	def damage_bonus_type(self,)
 		pass
-
+		
 	def compare_initiative(self):
 		char_initiative = self.char['initiative']
 		mons_initiative = self.mons['initiative']
