@@ -237,7 +237,7 @@ class Battle:
 			self.do_monster_attack()
 
 	def do_character_attack(self):
-		aggro_input = self.attack_aggressiveness()
+		aggro_level = self.attack_aggressiveness()
 		# roll d20
 		char_hit_roll = random.randint(1, 20)
 
@@ -255,11 +255,14 @@ class Battle:
 			attack_roll = random.randint(1, self.char['damageDice']) + self.char['damageBonus']  # ADD THE MODIFIER TYPE DAMAGE HERE
 			print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
 			new_char_health = self.mons['hitPoints'] - attack_roll
-			if new_char_health
 			Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
 			print('{!s} has {!s} HP left. \n'.format(self.monster_name, new_char_health))
 
-		# failed it
+            ### if new char health * aggro_level == new char health:
+        ###         print stuff
+        ####        break
+
+        # failed it
 		else:
 			print('{!s} did not hit above {!s}\'s armor class!'.format(self.character_name, self.monster_name))
 
