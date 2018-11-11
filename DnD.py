@@ -22,8 +22,8 @@ class Characters:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
 		Characters.add_stats(self, character_name)
-        
-                                  
+
+
 	# removes a character from characters.json
 	def remove_character(self, character_name):
 		try:
@@ -64,7 +64,7 @@ class Characters:
 
 		# add to json
 		self.characters[character_name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
-		                         "attackHit": attack_hit, "damageDice": damage_dice, "strModifier": str_modifier,
+								 "attackHit": attack_hit, "damageDice": damage_dice, "strModifier": str_modifier,
 								 "dexModifier": dex_modifier, "cure": cure, "numAttacks": num_attacks,
 								 "proficiency": proficiency
 								 }
@@ -72,7 +72,7 @@ class Characters:
 		with open('characters.json', 'w') as characters_file:
 			characters_file.truncate(0)
 			characters_file.write(json.dumps(self.characters))
-       
+
 		print('\n')
 		print('Stats added. \n\n')
 
@@ -157,7 +157,7 @@ class Monsters:
 
 		# add to json
 		self.monsters[name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
-		                         "attackHit": attack_hit, "damageDice": damage_dice, "numAttacks": num_attacks}
+								 "attackHit": attack_hit, "damageDice": damage_dice, "numAttacks": num_attacks}
 
 		with open('monsters.json', 'w') as monsters_file:
 			monsters_file.truncate(0)
@@ -214,10 +214,10 @@ class Battle:
 		aggro_input = int(input())
 		aggro = {1: .75, 2: .50, 3: .25, 4: aggro_input}
 		print('Battle will stop when the character reaches {!s}'.format(aggro[aggro_input]))
-		
+
 		return aggro[aggro_input]
 	
-	def damage_bonus_type(self,)
+	def damage_bonus_type(self)
 		pass
 		
 	def compare_initiative(self):
@@ -237,6 +237,7 @@ class Battle:
 			self.do_monster_attack()
 
 	def do_character_attack(self):
+		aggro_input = self.attack_aggressiveness()
 		# roll d20
 		char_hit_roll = random.randint(1, 20)
 
@@ -254,6 +255,7 @@ class Battle:
 			attack_roll = random.randint(1, self.char['damageDice']) + self.char['damageBonus']  # ADD THE MODIFIER TYPE DAMAGE HERE
 			print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
 			new_char_health = self.mons['hitPoints'] - attack_roll
+			if new_char_health
 			Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
 			print('{!s} has {!s} HP left. \n'.format(self.monster_name, new_char_health))
 
