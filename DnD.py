@@ -162,7 +162,7 @@ class Monsters:
 		with open('monsters.json', 'w') as monsters_file:
 			monsters_file.truncate(0)
 			monsters_file.write(json.dumps(self.monsters))
-			
+
 		print('\n')
 		print('Stats added! \n')
 
@@ -202,24 +202,49 @@ class Battle:
 			monsters = json.load(monsters_file)
 			self.mons = monsters[monster_name]
 
-
+	# prompt for a predefined aggro level or enter a custom one
 	def attack_aggressiveness(self):
 		# work in attack until health percentage
-		print('Attack with what level of aggressiveness? \n')
-		print('1) Safe - 75% health \n')
-		print('2) Balnced - 50% health \n')
-		print('3) Aggressive - 25% health \n')
-		print('4) Custom - DM entered \n')
-		
-		aggro_input = int(input())
-		aggro = {1: .75, 2: .50, 3: .25, 4: aggro_input}
-		print('Battle will stop when the character reaches {!s}'.format(aggro[aggro_input]))
+		print('Attack with what level of aggressiveness?')
+		print('1) Safe - 75% health')
+		print('2) Balnced - 50% health')
+		print('3) Aggressive - 25% health')
+		print('4) Custom - DM entered')
 
-		return aggro[aggro_input]
-	
-	def damage_bonus_type(self)
-		pass
-		
+		# do an input check
+		try:
+			aggro_input = int(input())
+			aggro = {1: .75, 2: .50, 3: .25}
+
+			if aggro_input == 4:
+				custom_aggro = float(input('Enter a health percentage \n'))
+				aggro[aggro_input] = custom_aggro
+
+			print('Battle will stop when the character reaches {!s} of their starting health'.format(aggro[aggro_input]))
+
+			return aggro[aggro_input]
+
+		except ValueError:
+			Battle.attack_aggressiveness(self)
+
+		except SyntaxError:
+			Battle.attack_aggressiveness(self)
+
+	# prompt for damage bonus type and return the value of the stat entered
+	@staticmethod
+	def damage_bonus_type(self):
+		try:
+			modifier_input = int(input('Enter the modifier type: \n 1) Strength \n 2) Dexterity \n'))
+			return modifier_input
+
+		except ValueError:
+			print('Enter \'1\' or \'2\'')
+			Battle.damage_bonus_type()
+
+		except SyntaxError:
+			print('Enter \'1\' or \'2\'')
+			Battle.damage_bonus_type()
+
 	def compare_initiative(self):
 		char_initiative = self.char['initiative']
 		mons_initiative = self.mons['initiative']
@@ -236,8 +261,8 @@ class Battle:
 			self.do_character_attack()
 			self.do_monster_attack()
 
-	def do_character_attack(self):
-		aggro_level = self.attack_aggressiveness()
+	def do_character_attack(self, aggro_level):
+
 		# roll d20
 		char_hit_roll = random.randint(1, 20)
 
@@ -258,11 +283,11 @@ class Battle:
 			Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
 			print('{!s} has {!s} HP left. \n'.format(self.monster_name, new_char_health))
 
-            ### if new char health * aggro_level == new char health:
-        ###         print stuff
-        ####        break
+			if (new_char_health * aggro_level) == self.mons['hitPoints']:
+				print('Character has reached {!s} of original health!'.format(aggro_level))
+				return
 
-        # failed it
+		# failed it
 		else:
 			print('{!s} did not hit above {!s}\'s armor class!'.format(self.character_name, self.monster_name))
 
