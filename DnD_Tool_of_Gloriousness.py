@@ -9,7 +9,7 @@ print('\nPress \'q\' to quit or go back.')
 while True:
     print('What would you like to do? \n')
     print('1) Add a new character')
-    print('2) Get a character\'s specific stat')
+    print('2) List a character stat definitions')
     print('3) Update a character\'s stats')
     print('4) Remove a character')
     print('5) Add a new monster')
@@ -27,35 +27,37 @@ while True:
     else:
         menu_entry = int(menu_entry)
 
+        # if entry <= 4 instantiate Characters() and prompt for a character name to modify
         if menu_entry <= 4:
             characters = DnD.Characters()
             character_name = input('Enter character name: \n').lower()
 
-        # add character
-        if menu_entry == 1:
-            characters.create_character(character_name)
+            # add character
+            if menu_entry == 1:
+                characters.create_character(character_name)
 
-        # get a stat or update one
-        elif menu_entry == 2 or menu_entry == 3:
-            characters.list_stats(character_name)
-            character_stat = input('Enter character stat: \n')
+            # get a stat or update one
+            elif menu_entry == 2 or menu_entry == 3:
+                characters.list_stats(character_name)
+                character_stat = input('Enter character stat: \n')
 
-            if menu_entry == 2:
-                print(characters.list_stats(character_name))
+                if menu_entry == 2:
+                    print(characters.list_stats(character_name))
 
-            elif menu_entry == 3:
-                try:
-                    new_stat = int(input('Enter new stat value: \n'))
-                except ValueError:
-                    print('Enter a number, not a string.')
-                    main()
-                # attempt to add the stat
-                characters.change_stat(character_name, character_stat, new_stat)
-                print('Done')
+                elif menu_entry == 3:
+                    try:
+                        new_stat = int(input('Enter new stat value: \n'))
+                    except ValueError:
+                        print('Enter a number, not a string.')
+                        main()
+                    # attempt to add the stat
+                    characters.change_stat(character_name, character_stat, new_stat)
+                    print('Done')
 
         # add monster
         if menu_entry == 7:
-            add_monster()
+           monsters = DnD.Monsters()
+           monster_name = input('Enter monster name: \n')
 
         # get a stat or update one
         elif menu_entry == 7 or menu_entry == 7:
