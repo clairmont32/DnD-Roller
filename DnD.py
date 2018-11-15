@@ -87,7 +87,7 @@ class Characters:
         return
 
     # updates a current stat
-    def change_stat(self, stat, new_stat):
+    def change_stat(self, character_name, stat, new_stat):
         try:
             self.characters[character_name].update({stat: new_stat})
         except KeyError as ker:
@@ -315,3 +315,4 @@ class Battle:
         # failed it
         else:
             print('{!s} did not hit above {!s}\'s armor class!'.format(self.monster_name, self.character_name))
+

@@ -27,20 +27,21 @@ while True:
     else:
         menu_entry = int(menu_entry)
 
-        if menu_entry <= 3:
+        if menu_entry <= 4:
+            characters = DnD.Characters()
             character_name = input('Enter character name: \n').lower()
+
         # add character
         if menu_entry == 1:
-            characters = DnD.Characters()
             characters.create_character(character_name)
-            
 
         # get a stat or update one
         elif menu_entry == 2 or menu_entry == 3:
+            characters.list_stats(character_name)
             character_stat = input('Enter character stat: \n')
 
             if menu_entry == 2:
-                print(get_character_stat(character_name, character_stat))
+                print(characters.list_stats(character_name))
 
             elif menu_entry == 3:
                 try:
@@ -49,7 +50,7 @@ while True:
                     print('Enter a number, not a string.')
                     main()
                 # attempt to add the stat
-                change_character_stat(character_name, character_stat, new_stat)
+                characters.change_stat(character_name, character_stat, new_stat)
                 print('Done')
 
         # add monster
