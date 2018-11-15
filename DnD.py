@@ -23,7 +23,6 @@ class Characters:
             characters_file.write(json.dumps(self.characters))
         Characters.add_stats(self, character_name)
 
-
     # removes a character from characters.json
     def remove_character(self, character_name):
         try:
@@ -77,9 +76,9 @@ class Characters:
         print('Stats added. \n\n')
 
     # lists stats for a given character
-    def list_stats(self, character_name):
+    def list_character_stats(self, character_name):
         try:
-            for stat in self.characters[character_name].keys():
+            for stat, value in self.characters[character_name].items():
                 print(stat)
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(self.character_name))
