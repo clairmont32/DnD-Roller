@@ -54,18 +54,18 @@ while True:
                 print('Done')
 
         # add monster
-        if menu_entry == 4:
+        if menu_entry == 7:
             add_monster()
 
         # get a stat or update one
-        elif menu_entry == 5 or menu_entry == 6:
+        elif menu_entry == 7 or menu_entry == 7:
             monster_name = input('Enter monster name: \n').lower()
             monster_stat = input('Enter monster stat: \n')
 
-            if menu_entry == 5:
+            if menu_entry == 7:
                 print(get_monster_stat(monster_name, monster_stat))
 
-            elif menu_entry == 6:
+            elif menu_entry == 7:
                 try:
                     new_stat = int(input('Enter new stat value: \n'))
                 except ValueError:
@@ -81,7 +81,7 @@ while True:
             print(roll_die(sides))
 
         # multi-die roll
-        if menu_entry == 8:
+        if menu_entry == 10:
             total_dice = int(input('Number of dice to throw? \n'))
             sides = int(input('Enter amount of sides: \n'))
             while total_dice > 0:
@@ -89,7 +89,7 @@ while True:
                 total_dice -= 1
 
         # simulate a battle (still half broken HP updates?)
-        if menu_entry == 9:
+        if menu_entry == 10:
             character_name = input('Enter character name: \n')
             monster_name = input('Enter monster name: \n')
             battle_simulator(character_name, monster_name)
