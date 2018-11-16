@@ -8,12 +8,13 @@ import random
 print('\nPress \'q\' to quit or go back.')
 while True:
     print('What would you like to do? \n')
+    ### add option for list_characters()  #
     print('1) Add a new character')
-    print('2) List a character stat definitions')
+    print('2) List a character\'s stats')
     print('3) Update a character\'s stats')
     print('4) Remove a character')
     print('5) Add a new monster')
-    print('6) Get a monster\'s specific stat')
+    print('6) List a monster\'s stats')
     print('7) Update a monster\'s stats')
     print('8) Remove a monster')
     print('8) Roll a single dX')
@@ -36,23 +37,23 @@ while True:
             if menu_entry == 1:
                 characters.create_character(character_name)
 
-            # get a stat or update one
-            elif menu_entry == 2 or menu_entry == 3:
-                characters.list_stats(character_name)
-                character_stat = input('Enter character stat: \n')
+            if menu_entry == 2:
+                print(characters.list_character_stats(character_name))
 
-                if menu_entry == 2:
-                    print(characters.list_stats(character_name))
+            elif menu_entry == 3:
+                try:
+                    print(characters.list_character_stats(character_name))
+                    character_stat = input('Enter stat name: \n')
+                    new_stat = int(input('Enter new stat value: \n'))
 
-                elif menu_entry == 3:
-                    try:
-                        new_stat = int(input('Enter new stat value: \n'))
-                    except ValueError:
-                        print('Enter a number, not a string.')
-                        main()
                     # attempt to add the stat
                     characters.change_stat(character_name, character_stat, new_stat)
                     print('Done')
+                except ValueError:
+                    print('Enter a number, not a string.')
+                    continue
+
+
 
         # add monster
         if menu_entry == 7:

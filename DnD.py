@@ -37,10 +37,11 @@ class Characters:
         return
 
     # lists current character names
-    def list_characters(self, character_name):
+    def list_characters(self):
         names = [name for name in self.characters.keys()]
         for name in names:
             print(name)
+        input('Press Enter to continue...')
 
     # prompt for character stats
     def add_stats(self, character_name):
@@ -79,11 +80,12 @@ class Characters:
     def list_character_stats(self, character_name):
         try:
             for stat, value in self.characters[character_name].items():
-                print(stat)
-        except KeyError:
-            print('{!s} does not have a character profile saved!'.format(self.character_name))
+                print(stat, value)
+            print('\n\n')
+            input('Press Enter to continue...')
 
-        return
+        except KeyError:
+            print('{!s} does not have a character profile saved!'.format(character_name))
 
     # updates a current stat
     def change_stat(self, character_name, stat, new_stat):
@@ -116,7 +118,7 @@ class Monsters:
         with open('monsters.json', 'w') as monsters_file:
             monsters_file.truncate(0)
             monsters_file.write(json.dumps(self.monsters))
-        add_stats(monster_name)
+        self.add_stats(monster_name)
         return
 
     # removes a monster from monsters.json
@@ -133,7 +135,7 @@ class Monsters:
         return
 
     # lists current monster names
-    def list_monsters(self, monster_name):
+    def list_monsters(self):
         names = [name for name in self.monsters.keys()]
         for name in names:
             print(name)
@@ -155,7 +157,7 @@ class Monsters:
                 print('You didn\'t enter a number!')
 
         # add to json
-        self.monsters[name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
+        self.monsters[monster_name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
                                  "attackHit": attack_hit, "damageDice": damage_dice, "numAttacks": num_attacks}
 
         with open('monsters.json', 'w') as monsters_file:
@@ -166,17 +168,17 @@ class Monsters:
         print('Stats added! \n')
 
     # lists stats for a given monster
-    def list_stats(self, monster_name):
+    def list_monster_stats(self, monster_name):
         try:
-            for stat in self.monsters[monster_name].keys():
+            for stat, value in self.monsters[monster_name].items():
                 print(stat)
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
 
         return
 
-    # updates a current stat
-    def change_stat(self, stat, new_stat):
+    # updates a current stat for a named monster
+    def change_stat(self, monster_name, stat, new_stat):
         try:
             self.monsters[monster_name].update({stat: new_stat})
         except KeyError as ker:
