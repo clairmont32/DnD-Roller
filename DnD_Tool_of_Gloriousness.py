@@ -5,10 +5,6 @@ import json
 import random
 
 
-
-
-
-
 def character_menu_selection(menu_entry):
     # if entry <= 4 instantiate Characters() and prompt for a character name to modify
     if menu_entry <= 5 and menu_entry != 2:
@@ -33,54 +29,34 @@ def character_menu_selection(menu_entry):
                         5: characters.remove_character(character_name)}
 
 
-def moonser_menu_selection(menu_entry):
+def monster_menu_selection(menu_entry):
     # if entry >= 6 instantiate monsters() and prompt for a monster name to modify
-    elif menu_entry >= 6 and menu_entry <= 10:
+    if menu_entry >= 6 and menu_entry <= 10 and menu_entry != 7:
         monsters = DnD.Monsters()
-        monster_name = input('Enter monster name: \n').lower())
-
-    # add monster
-    if menu_entry == 7:
-       monsters = DnD.Monsters()
-       monster_name = input('Enter monster name: \n')
-
-    # get a stat or update one
-    elif menu_entry == 7 or menu_entry == 7:
-        monster_name = input('Enter monster name: \n').lower())
-
-        if menu_entry == 7:
-            print(get_monster_stat(monster_name, monster_stat))
-
-        elif menu_entry == 7:
-            try:
-                mons_new_stat = int(input('Enter new stat value: \n'))
-            except ValueError:
-                print('Enter a number, not a string.')
-                main()
-            # attempt to add the stat
-            change_monster_stat(monster_name, monster_stat, new_stat)
-            print('Done')
-
-    # single die roll
-    if menu_entry == 7:
-        sides = int(input('Enter amount of sides: \n'))
-        print(roll_die(sides))
-
-    # multi-die roll
-    if menu_entry == 10:
-        total_dice = int(input('Number of dice to throw? \n'))
-        sides = int(input('Enter amount of sides: \n'))
-        while total_dice > 0:
-            print(roll_die(sides))
-            total_dice -= 1
-
-    # simulate a battle (still half broken HP updates?)
-    if menu_entry == 10:
-        character_name = input('Enter character name: \n')
-        monster_name = input('Enter monster name: \n')
-        battle_simulator(character_name, monster_name)
+        monster_name = input('Enter monster name: \n').lower()
 
 
+
+
+def roll_die(menu_entry):
+    while True:
+        try:
+            sides = int(input('Enter amount of sides: \n'))
+        except ValueError:
+            print('Enter an integer')
+
+        break
+
+
+
+'''
+# simulate a battle (still half broken HP updates?)
+if menu_entry == 10:
+    character_name = input('Enter character name: \n')
+    monster_name = input('Enter monster name: \n')
+    battle_simulator(character_name, monster_name)
+
+'''
 
 def main():
     print('\nPress \'q\' to quit or go back.')
@@ -108,4 +84,14 @@ def main():
 
         else:
             menu_entry = int(menu_entry)
-            menu_selection(menu_entry)
+
+            # multi-die roll
+            if menu_entry == 11:
+                total_dice = int(input('Number of dice to throw? \n'))
+                sides = int(input('Enter amount of sides: \n'))
+                while total_dice > 0:
+                    print(roll_die(sides))
+                    total_dice -= 1
+
+if __init__ == '__main__':
+    main()
