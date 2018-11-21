@@ -6,10 +6,14 @@ import random
 
 
 def character_menu_selection(menu_entry):
-    # if entry <= 4 instantiate Characters() and prompt for a character name to modify
-    if menu_entry <= 5 and menu_entry != 2:
-        characters = DnD.Characters()
+    characters = DnD.Characters()
+
+    if menu_entry == 1 or menu_entry >= 3:
         character_name = input('Enter character name: \n').lower()
+        characters.create_character(character_name)
+
+        if menu_entry == 3:
+            characters.list_character_stats(character_name)
 
         if menu_entry == 4:
             while True:
@@ -17,35 +21,60 @@ def character_menu_selection(menu_entry):
                     print(characters.list_character_stats(character_name))
                     character_stat = input('Enter stat name: \n')
                     new_stat = int(input('Enter new stat value: \n'))
+                    characters.change_stat(character_name, character_stat, new_stat)
 
                 except ValueError:
                     print('Enter a number, not a string.')
 
                 break
 
-        menu_options = {1: characters.create_character(character_name), 2: characters.list_characters(),
-                        3: characters.list_character_stats(character_name),
-                        4: characters.change_stat(character_name, character_stat, new_stat),
-                        5: characters.remove_character(character_name)}
+        if menu_entry == 5:
+            characters.remove_character(character_name)
+
+    elif menu_entry == 2:
+        characters.list_characters()
 
 
 def monster_menu_selection(menu_entry):
-    # if entry >= 6 instantiate monsters() and prompt for a monster name to modify
-    if menu_entry >= 6 and menu_entry <= 10 and menu_entry != 7:
-        monsters = DnD.Monsters()
+    monsters = DnD.Monsters()
+
+    if menu_entry in range(6, 11) and menu_entry != 7:
         monster_name = input('Enter monster name: \n').lower()
 
+        if menu_entry == 6:
+            monsters.create_monster(monster_name)
+
+        if menu_entry == 8:
+            monsters.list_monster_stats(monster_name)
+
+        if menu_entry == 9:
+            while True:
+                try:
+                    print(monsters.list_monster_stats(monster_name))
+                    monster_stat = input('Enter stat name: \n')
+                    new_stat = int(input('Enter new stat value: \n'))
+                    monsters.change_stat(monster_name, monster_stat, new_stat)
+
+                except ValueError:
+                    print('Enter a number, not a string.')
+
+                break
+
+        if menu_entry == 10:
+            monsters.remove_monster(monster_name)
+        
+    elif menu_entry == 7:
+        monsters.list_monsters()
+        
 
 
+def roll_die(sides):
+    if sides > 0:
+        print(random.randint(1, sides))
 
-def roll_die(menu_entry):
-    while True:
-        try:
-            sides = int(input('Enter amount of sides: \n'))
-        except ValueError:
-            print('Enter an integer')
+    else:
+        print('Enter an integer greater than 0!')
 
-        break
 
 
 
@@ -57,6 +86,7 @@ if menu_entry == 10:
     battle_simulator(character_name, monster_name)
 
 '''
+
 
 def main():
     print('\nPress \'q\' to quit or go back.')
@@ -74,24 +104,55 @@ def main():
         print('9) Update a monster\'s stats')
         print('10) Remove a monster')
         print('11) Roll a single dX')
-        print('12) Roll XdX')
         print('13) Battle simulator')
         print('q) Quit \n')
 
         menu_entry = input()
+
+
         if menu_entry == 'q':
             exit(print('Bye bye!'))
 
-        else:
+        elif menu_entry.isalpha():
+            print('\nPlease enter \'q\' or a number \n\n')
+
+        elif menu_entry.isnumeric():
             menu_entry = int(menu_entry)
 
+            if menu_entry in range(1, 6):
+                character_menu_selection(menu_entry)
+
+            elif menu_entry in range(6, 11):
+                monster_menu_selection(menu_entry)
+
+            # single-die roll
+            elif menu_entry == 11:
+                while True:
+                    try:
+                        sides = int(input('Enter amount of sides: \n'))
+                    except ValueError:
+                        print('Enter an integer')
+
+                    break
+
+                roll_die(sides)
+                input('Press any key to return to the menu. \n\n')
+
             # multi-die roll
-            if menu_entry == 11:
-                total_dice = int(input('Number of dice to throw? \n'))
-                sides = int(input('Enter amount of sides: \n'))
+            elif menu_entry == 12:
+                while True:
+                    try:
+                        total_dice = int(input('Number of dice to throw? \n'))
+                        sides = int(input('Enter amount of sides: \n'))
+                    except ValueError:
+                        print('Enter an integer')
+                    break
+
                 while total_dice > 0:
-                    print(roll_die(sides))
+                    roll_die(sides)
                     total_dice -= 1
+                input('Press any key to return to the menu. \n\n')
+
 
 if __name__ == '__main__':
     main()
