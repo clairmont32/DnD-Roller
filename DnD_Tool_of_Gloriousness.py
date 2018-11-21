@@ -93,5 +93,5 @@ def main():
                     print(roll_die(sides))
                     total_dice -= 1
 
-if __init__ == '__main__':
+if __name__ == '__main__':
     main()
