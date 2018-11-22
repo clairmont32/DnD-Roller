@@ -86,7 +86,14 @@ def conduct_combat():
 
     while True:
         battle.commence_attack(aggro_level)
-
+        """
+         press a key after finished reviewing the last 2 attacks.
+         this assists DMs to interject with a particular set of results by
+         quitting the combat phase to adjust player/monster stats for any reason
+        """
+        
+        ### finish quit battle conditional
+        quit_battle = input('Press any key to continue battle. Press \'q\' to quit.')
 
 def main():
 
