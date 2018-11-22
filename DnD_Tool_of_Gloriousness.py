@@ -67,7 +67,6 @@ def monster_menu_selection(menu_entry):
         
     elif menu_entry == 7:
         monsters.list_monsters()
-        
 
 
 def roll_die(sides):
@@ -78,16 +77,15 @@ def roll_die(sides):
         print('Enter an integer greater than 0!')
 
 
-
-
-'''
-# simulate a battle (still half broken HP updates?)
-if menu_entry == 10:
+def conduct_combat():
+    # simulate a battle (still half broken HP updates?
     character_name = input('Enter character name: \n')
     monster_name = input('Enter monster name: \n')
-    battle_simulator(character_name, monster_name)
+    battle = DnD.Battle(character_name, monster_name)
+    aggro_level = battle.attack_aggressiveness()
 
-'''
+    while True:
+        battle.commence_attack(aggro_level)
 
 
 def main():
@@ -157,6 +155,9 @@ def main():
                     roll_die(sides)
                     total_dice -= 1
                 input('Press any key to return to the menu. \n\n')
+
+            elif menu_entry == 13:
+                conduct_combat()
 
 
 if __name__ == '__main__':
