@@ -10,15 +10,17 @@ def character_menu_selection(menu_entry):
 
     if menu_entry == 1 or menu_entry >= 3:
         character_name = input('Enter character name: \n').lower()
-        characters.create_character(character_name)
 
-        if menu_entry == 3:
+        if menu_entry == 1:
+            characters.create_character(character_name)
+
+        elif menu_entry == 3:
             characters.list_character_stats(character_name)
 
-        if menu_entry == 4:
+        elif menu_entry == 4:
             while True:
                 try:
-                    print(characters.list_character_stats(character_name))
+                    characters.list_character_stats(character_name)
                     character_stat = input('Enter stat name: \n')
                     new_stat = int(input('Enter new stat value: \n'))
                     characters.change_stat(character_name, character_stat, new_stat)
@@ -28,7 +30,7 @@ def character_menu_selection(menu_entry):
 
                 break
 
-        if menu_entry == 5:
+        elif menu_entry == 5:
             characters.remove_character(character_name)
 
     elif menu_entry == 2:
@@ -89,6 +91,8 @@ if menu_entry == 10:
 
 
 def main():
+
+    # print main menu
     print('\nPress \'q\' to quit or go back.')
     while True:
         print('What would you like to do? \n')
@@ -109,13 +113,14 @@ def main():
 
         menu_entry = input()
 
-
+        # if 'q' or a number is entered quit. If not, re-prompt.
         if menu_entry == 'q':
             exit(print('Bye bye!'))
 
         elif menu_entry.isalpha():
             print('\nPlease enter \'q\' or a number \n\n')
 
+        # do a sanity check on the entry for numbers
         elif menu_entry.isnumeric():
             menu_entry = int(menu_entry)
 
