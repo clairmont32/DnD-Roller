@@ -31,6 +31,8 @@ class Characters:
                 characters_file.truncate(0)
                 characters_file.write(json.dumps(self.characters))
 
+            print('Removed {!s} from characters list \n'.format(character_name))
+
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(character_name))
 
@@ -75,12 +77,13 @@ class Characters:
 
         print('\n')
         print('Stats added. \n\n')
+        input('Press any key to continue \n\n')
 
     # lists stats for a given character
     def list_character_stats(self, character_name):
         try:
-            for stat, value in self.characters[character_name].items():
-                print(stat, value)
+            for stat in self.characters[character_name].keys():
+                print(stat)
             print('\n\n')
             input('Press Enter to continue...')
 
@@ -99,6 +102,8 @@ class Characters:
             characters_file.truncate(0)
             characters_file.write(json.dumps(self.characters))
 
+        print('{!s} updated to {!s}.'.format(stat, new_stat))
+        input('Press any key to continue.')
 
 # means of interacting with monsters in monsters.json
 class Monsters:
