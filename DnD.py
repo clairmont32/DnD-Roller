@@ -105,6 +105,7 @@ class Characters:
         print('{!s} updated to {!s}.'.format(stat, new_stat))
         input('Press any key to continue.')
 
+
 # means of interacting with monsters in monsters.json
 class Monsters:
     def __init__(self):
@@ -208,12 +209,12 @@ class Battle:
             monsters = json.load(monsters_file)
             self.mons = monsters[monster_name]
 
+    @staticmethod
     # prompt for a predefined aggro level or enter a custom one
     def attack_aggressiveness():
-        # work in attack until health percentage
         print('Attack with what level of aggressiveness?')
         print('1) Safe - 75% health')
-        print('2) Balnced - 50% health')
+        print('2) Balanced - 50% health')
         print('3) Aggressive - 25% health')
         print('4) Custom - DM entered')
 
@@ -231,45 +232,51 @@ class Battle:
             return aggro[aggro_input]
 
         except ValueError:
+            print('Enter an aggressiveness option')
             Battle.attack_aggressiveness()
 
         except SyntaxError:
             Battle.attack_aggressiveness()
+
+    @staticmethod
+    def damage_modifier():
+        print('Use which attack modifier? \n')
+        print('1) Strength \n')
+        print('2) Dexterity \n')
+        print('3) None \n')
+
+        damage_type = {1: "strModifier", 2: "dexModifier"}
+        while True:
+            try:
+                modifier_selection = int(input())
+                if modifier_selection > 4:
+                    raise ValueError
+
+                return damage_type[modifier_selection]
+
+            except ValueError:
+                print('Enter a valid number')
+                Battle.damage_modifier()
 
     # prompt for damage bonus type and return the value of the stat entered
-    @staticmethod
-    def damage_bonus_type(self):
-        try:
-            modifier_input = int(input('Enter the modifier type: \n 1) Strength \n 2) Dexterity \n'))
-            return modifier_input
-
-        except ValueError:
-            print('Enter \'1\' or \'2\'')
-            Battle.damage_bonus_type()
-
-        except SyntaxError:
-            print('Enter \'1\' or \'2\'')
-            Battle.damage_bonus_type()
-
-    def compare_initiative(self):
+    def commence_attack(self, aggro_level):
         char_initiative = self.char['initiative']
         mons_initiative = self.mons['initiative']
 
-        aggro_level = Battle.attack_aggressiveness()
+        damage_type = Battle.damage_modifier()
         if mons_initiative > char_initiative:
             self.do_monster_attack(aggro_level)
-            self.do_character_attack(aggro_level)
+            self.do_character_attack(damage_type)
 
         elif mons_initiative < char_initiative:
-            self.do_character_attack(aggro_level)
+            self.do_character_attack(damage_type)
             self.do_monster_attack(aggro_level)
 
         elif mons_initiative == char_initiative:
-            self.do_character_attack(aggro_level)
+            self.do_character_attack(damage_type)
             self.do_monster_attack(aggro_level)
 
-    def do_character_attack(self, aggro_level):
-
+    def do_character_attack(self, damage_type):
         # roll d20
         char_hit_roll = random.randint(1, 20)
 
@@ -277,22 +284,27 @@ class Battle:
             print('{!s} has been killed!'.format(self.character_name))
             return
 
-        # compare if roll stats are greater than character's armor, subtract damage from players health
-        # perform health check and display new values
-        char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
-        if char_attack_hit > self.mons['armorClass']:
-            print('character attack hit: {!s}'.format(char_attack_hit))
-            #
-            # add the modifier damage here
-            attack_roll = random.randint(1, self.char['damageDice']) + self.char['damageBonus']  # add the modifier type damage here
-            print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
-            new_char_health = self.mons['hitPoints'] - attack_roll
-            Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
-            print('{!s} has {!s} hp left. \n'.format(self.monster_name, new_char_health))
+        try:
+            # compare if roll stats are greater than character's armor, subtract damage from players health
+            # perform health check and display new values
+            char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
+            if char_attack_hit > self.mons['armorClass']:
+                print('character attack hit: {!s}'.format(char_attack_hit))
 
-            if (new_char_health * aggro_level) == self.mons['hitPoints']:
-                print('character has reached {!s} of original health!'.format(aggro_level))
-                return
+                # calculate attack damage
+
+                attack_roll = random.randint(1, self.char['damageDice']) + self.char[damage_type]
+                print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
+
+                # calculate health impacts of monster
+                new_char_health = self.mons['hitPoints'] - attack_roll
+                Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
+                print('{!s} has {!s} hp left. \n'.format(self.monster_name, new_char_health))
+
+        # if KeyError, a stat is missing from a profile somewhere
+        except KeyError as ker:
+            print('A character stat seems to be missing.')
+            exit(print(ker))
 
         # failed it
         else:
@@ -303,20 +315,32 @@ class Battle:
         # roll d20
         mons_hit_roll = random.randint(1, 20)
 
-        if self.mons['hitPoints'] <= 0:
-            print('{!s} has been killed!'.format(self.monster_name))
-            return
+        try:
+            if self.mons['hitPoints'] <= 0:
+                print('{!s} has been killed!'.format(self.monster_name))
+                return
 
-        # compare if roll stats are greater than self.character's armor, subtract damage from players health
-        # perform health check and display new values
-        monster_attack_hit = mons_hit_roll + self.mons['attackHit']
-        if monster_attack_hit > self.char['armorClass']:
-            print('self.monster attack hit: {!s}'.format(monster_attack_hit))
-            attack_roll = random.randint(1, self.mons['damageDice'])
-            print('{!s} hit {!s} for {!s} damage'.format(self.monster_name, self.character_name, attack_roll))
-            new_char_health = self.char['hitPoints'] - attack_roll
-            Monsters.change_stat(self.monster_name, 'hitPoints', new_char_health)
-            print('{!s} has {!s} HP left. \n'.format(self.character_name, new_char_health))
+            # compare if roll stats are greater than self.character's armor, subtract damage from players health
+            # perform health check and display new values
+            monster_attack_hit = mons_hit_roll + self.mons['attackHit']
+            if monster_attack_hit > self.char['armorClass']:
+                print('self.monster attack hit: {!s}'.format(monster_attack_hit))
+                attack_roll = random.randint(1, self.mons['damageDice'])
+                print('{!s} hit {!s} for {!s} damage'.format(self.monster_name, self.character_name, attack_roll))
+
+                # calculate health impacts and aggro level health
+                new_char_health = self.char['hitPoints'] - attack_roll
+                Monsters.change_stat(self.monster_name, 'hitPoints', new_char_health)
+                print('{!s} has {!s} HP left. \n'.format(self.character_name, new_char_health))
+
+                if (self.char['hitPoints'] - (self.char['hitPoints'] * aggro_level)) == new_char_health:
+                    print('Character\'s desired aggro level health reached!')
+                    return
+
+        # if KeyError, a stat is missing from a profile somewhere
+        except KeyError as ker:
+            print('A character stat seems to be missing.')
+            exit(print(ker))
 
         # failed it
         else:
