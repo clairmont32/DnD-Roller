@@ -86,14 +86,16 @@ def conduct_combat():
 
     while True:
         battle.commence_attack(aggro_level)
+        quit_continue_battle = input('Press enter to continue or \'q\' to quit to menu. \n')
+        if quit_continue_battle == 'q':
+            return
 
 
 def main():
 
     # print main menu
-    print('\nPress \'q\' to quit or go back.')
     while True:
-        print('What would you like to do? \n')
+        print('What would you like to do?')
 
         print('1) Add a new character')
         print('2) List all characters')
@@ -106,6 +108,7 @@ def main():
         print('9) Update a monster\'s stats')
         print('10) Remove a monster')
         print('11) Roll a single dX')
+        print('12) Roll a XdX')
         print('13) Battle simulator')
         print('q) Quit \n')
 
@@ -139,7 +142,7 @@ def main():
                     break
 
                 roll_die(sides)
-                input('Press any key to return to the menu. \n\n')
+                input('Press enter to return to the menu. \n\n')
 
             # multi-die roll
             elif menu_entry == 12:
@@ -154,7 +157,7 @@ def main():
                 while total_dice > 0:
                     roll_die(sides)
                     total_dice -= 1
-                input('Press any key to return to the menu. \n\n')
+                input('Press enter to return to the menu. \n\n')
 
             elif menu_entry == 13:
                 conduct_combat()
