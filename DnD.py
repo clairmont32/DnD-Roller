@@ -31,19 +31,17 @@ class Characters:
                 characters_file.truncate(0)
                 characters_file.write(json.dumps(self.characters))
 
-            print('Removed {!s} from characters list \n'.format(character_name))
+            print('Removed {!s} from characters list'.format(character_name))
 
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(character_name))
 
-        return
+        input('Press enter to continue.\n')
 
     # lists current character names
     def list_characters(self):
-        names = [name for name in self.characters.keys()]
-        for name in names:
-            print(name)
-        input('Press Enter to continue...')
+        [print(name) for name in self.characters.keys()]
+        input('\n Press Enter to continue. \n')
 
     # prompt for character stats
     def add_stats(self, character_name):
@@ -75,20 +73,20 @@ class Characters:
             characters_file.truncate(0)
             characters_file.write(json.dumps(self.characters))
 
-        print('\n')
-        print('Stats added. \n\n')
-        input('Press any key to continue \n\n')
+        print('Stats added. \n')
+        input('Press enter to continue \n')
 
     # lists stats for a given character
     def list_character_stats(self, character_name):
         try:
-            for stat in self.characters[character_name].keys():
-                print(stat)
-            print('\n\n')
-            input('Press Enter to continue...')
+            for stat, value in self.characters[character_name].items():
+                print(stat + ':', value)
+            print('\n')
 
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(character_name))
+
+        input('Press enter to continue. \n')
 
     # updates a current stat
     def change_stat(self, character_name, stat, new_stat):
@@ -103,7 +101,8 @@ class Characters:
             characters_file.write(json.dumps(self.characters))
 
         print('{!s} updated to {!s}.'.format(stat, new_stat))
-        input('Press any key to continue.')
+
+        input('Press enter to continue. \n')
 
 
 # means of interacting with monsters in monsters.json
@@ -125,7 +124,6 @@ class Monsters:
             monsters_file.truncate(0)
             monsters_file.write(json.dumps(self.monsters))
         self.add_stats(monster_name)
-        return
 
     # removes a monster from monsters.json
     def remove_monster(self, monster_name):
@@ -135,16 +133,18 @@ class Monsters:
                 monsters_file.truncate(0)
                 monsters_file.write(json.dumps(self.monsters))
 
+            print('Removed {!s} from characters list'.format(monster_name))
+
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
 
-        return
+        input('Press enter to continue. \n')
 
     # lists current monster names
     def list_monsters(self):
-        names = [name for name in self.monsters.keys()]
-        for name in names:
-            print(name)
+        [print(name) for name in self.monsters.keys()]
+
+        input('Press enter to continue. \n')
 
     # prompt for monster stats
     def add_stats(self, monster_name):
@@ -171,17 +171,18 @@ class Monsters:
             monsters_file.write(json.dumps(self.monsters))
 
         print('\n')
-        print('Stats added! \n')
+        print('Stats added!')
+        input('Press enter to continue. \n')
 
     # lists stats for a given monster
     def list_monster_stats(self, monster_name):
         try:
             for stat, value in self.monsters[monster_name].items():
-                print(stat)
+                print(stat + ':', value)
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
 
-        return
+        input('Press enter to continue. \n')
 
     # updates a current stat for a named monster
     def change_stat(self, monster_name, stat, new_stat):
@@ -194,6 +195,9 @@ class Monsters:
         with open('monsters.json', 'w') as monsters_file:
             monsters_file.truncate(0)
             monsters_file.write(json.dumps(self.monsters))
+
+        print('{!s} updated to {!s}.'.format(stat, new_stat))
+        input('Press enter to continue. \n')
 
 
 class Battle:
@@ -227,7 +231,7 @@ class Battle:
                 custom_aggro = float(input('Enter a health percentage \n'))
                 aggro[aggro_input] = custom_aggro
 
-            print('Battle will stop when the character reaches {!s} of their starting health'.format(aggro[aggro_input]))
+            print('Battle will stop when the character reaches {!s} of their starting health \n'.format(aggro[aggro_input]))
 
             return aggro[aggro_input]
 
@@ -240,19 +244,19 @@ class Battle:
 
     @staticmethod
     def damage_modifier():
-        print('Use which attack modifier? \n')
-        print('1) Strength \n')
-        print('2) Dexterity \n')
+        print('Use which attack modifier?')
+        print('1) Strength')
+        print('2) Dexterity')
         print('3) None \n')
 
-        damage_type = {1: "strModifier", 2: "dexModifier"}
+        damage_modifiers = {1: "strModifier", 2: "dexModifier"}
         while True:
             try:
                 modifier_selection = int(input())
                 if modifier_selection > 4:
                     raise ValueError
-
-                return damage_type[modifier_selection]
+                print('Damage modifier is set to: {!s}'.format(damage_modifiers[modifier_selection]))
+                return damage_modifiers[modifier_selection]
 
             except ValueError:
                 print('Enter a valid number')
@@ -281,7 +285,7 @@ class Battle:
         char_hit_roll = random.randint(1, 20)
 
         if self.char['hitPoints'] <= 0:
-            print('{!s} has been killed!'.format(self.character_name))
+            print('{!s} has been killed! \n'.format(self.character_name))
             return
 
         try:
@@ -292,14 +296,13 @@ class Battle:
                 print('character attack hit: {!s}'.format(char_attack_hit))
 
                 # calculate attack damage
-
                 attack_roll = random.randint(1, self.char['damageDice']) + self.char[damage_type]
                 print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
 
                 # calculate health impacts of monster
-                new_char_health = self.mons['hitPoints'] - attack_roll
-                Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
-                print('{!s} has {!s} hp left. \n'.format(self.monster_name, new_char_health))
+                new_mons_health = self.mons['hitPoints'] - attack_roll
+                Monsters.change_stat(self.monster_name, 'hitPoints', new_mons_health)
+                print('{!s} has {!s} hp left. \n'.format(self.monster_name, new_mons_health))
 
         # if KeyError, a stat is missing from a profile somewhere
         except KeyError as ker:
@@ -308,7 +311,7 @@ class Battle:
 
         # failed it
         else:
-            print('{!s} did not hit above {!s}\'s armor class!'.format(self.character_name, self.monster_name))
+            print('{!s} did not hit above {!s}\'s armor class! \n'.format(self.character_name, self.monster_name))
 
     # perform single monster attack
     def do_monster_attack(self, aggro_level):
@@ -317,7 +320,7 @@ class Battle:
 
         try:
             if self.mons['hitPoints'] <= 0:
-                print('{!s} has been killed!'.format(self.monster_name))
+                print('{!s} has been killed! \n'.format(self.monster_name))
                 return
 
             # compare if roll stats are greater than self.character's armor, subtract damage from players health
@@ -330,11 +333,11 @@ class Battle:
 
                 # calculate health impacts and aggro level health
                 new_char_health = self.char['hitPoints'] - attack_roll
-                Monsters.change_stat(self.monster_name, 'hitPoints', new_char_health)
+                Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
                 print('{!s} has {!s} HP left. \n'.format(self.character_name, new_char_health))
 
                 if (self.char['hitPoints'] - (self.char['hitPoints'] * aggro_level)) == new_char_health:
-                    print('Character\'s desired aggro level health reached!')
+                    print('Character\'s desired aggro level health reached! \n')
                     return
 
         # if KeyError, a stat is missing from a profile somewhere
@@ -344,5 +347,5 @@ class Battle:
 
         # failed it
         else:
-            print('{!s} did not hit above {!s}\'s armor class!'.format(self.monster_name, self.character_name))
+            print('{!s} did not hit above {!s}\'s armor class! \n'.format(self.monster_name, self.character_name))
 
