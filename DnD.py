@@ -9,7 +9,7 @@ class Characters:
     def __init__(self):
         cwd = os.getcwd()
         if os.path.exists('characters.json') is False:
-            exit(print('Could not find characters.json in '.format(cwd)))
+            exit(print('Could not find characters.json in {!s}'.format(cwd)))
 
         with open('characters.json', 'r') as characters_file:
             self.characters = json.load(characters_file)
@@ -85,6 +85,7 @@ class Characters:
 
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(character_name))
+            return
 
         input('Press enter to continue. \n')
 
@@ -137,6 +138,7 @@ class Monsters:
 
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
+            return
 
         input('Press enter to continue. \n')
 
@@ -206,12 +208,22 @@ class Battle:
         super(Monsters)
         self.character_name = character_name
         self.monster_name = monster_name
-        with open('characters.json', 'r') as characters_file:
-            characters = json.load(characters_file)
-            self.char = characters[character_name]
-        with open('monsters.json', 'r') as monsters_file:
-            monsters = json.load(monsters_file)
-            self.mons = monsters[monster_name]
+
+        try:
+            with open('characters.json', 'r') as characters_file:
+                characters = json.load(characters_file)
+                self.char = characters[character_name]
+        except KeyError:
+            print('{!s} does not exist. Please ensure the spelling/capitalization is '
+                  'correct or reference the character list'.format(character_name))
+
+        try:
+            with open('monsters.json', 'r') as monsters_file:
+                monsters = json.load(monsters_file)
+                self.mons = monsters[monster_name]
+        except KeyError:
+            print('{!s} does not exist. Please ensure the spelling/capitalization is '
+                  'correct or reference the monster list'.format(monster_name))
 
     @staticmethod
     # prompt for a predefined aggro level or enter a custom one
@@ -255,7 +267,7 @@ class Battle:
                 modifier_selection = int(input())
                 if modifier_selection > 4:
                     raise ValueError
-                print('Damage modifier is set to: {!s}'.format(damage_modifiers[modifier_selection]))
+                print('Damage modifier is set to: {!s} \n\n'.format(damage_modifiers[modifier_selection]))
                 return damage_modifiers[modifier_selection]
 
             except ValueError:
@@ -263,11 +275,11 @@ class Battle:
                 Battle.damage_modifier()
 
     # prompt for damage bonus type and return the value of the stat entered
-    def commence_attack(self, aggro_level):
+    def commence_attack(self, damage_type, aggro_level):
         char_initiative = self.char['initiative']
         mons_initiative = self.mons['initiative']
 
-        damage_type = Battle.damage_modifier()
+
         if mons_initiative > char_initiative:
             self.do_monster_attack(aggro_level)
             self.do_character_attack(damage_type)
@@ -293,7 +305,7 @@ class Battle:
             # perform health check and display new values
             char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
             if char_attack_hit > self.mons['armorClass']:
-                print('character attack hit: {!s}'.format(char_attack_hit))
+                print('Character attack hit: {!s}'.format(char_attack_hit))
 
                 # calculate attack damage
                 attack_roll = random.randint(1, self.char['damageDice']) + self.char[damage_type]
@@ -301,7 +313,7 @@ class Battle:
 
                 # calculate health impacts of monster
                 new_mons_health = self.mons['hitPoints'] - attack_roll
-                Monsters.change_stat(self.monster_name, 'hitPoints', new_mons_health)
+                Monsters.change_stat(Monsters(), self.monster_name, 'hitPoints', new_mons_health)
                 print('{!s} has {!s} hp left. \n'.format(self.monster_name, new_mons_health))
 
         # if KeyError, a stat is missing from a profile somewhere
@@ -327,13 +339,13 @@ class Battle:
             # perform health check and display new values
             monster_attack_hit = mons_hit_roll + self.mons['attackHit']
             if monster_attack_hit > self.char['armorClass']:
-                print('self.monster attack hit: {!s}'.format(monster_attack_hit))
+                print('Monster attack hit: {!s}'.format(monster_attack_hit))
                 attack_roll = random.randint(1, self.mons['damageDice'])
                 print('{!s} hit {!s} for {!s} damage'.format(self.monster_name, self.character_name, attack_roll))
 
                 # calculate health impacts and aggro level health
                 new_char_health = self.char['hitPoints'] - attack_roll
-                Characters.change_stat(self.character_name, 'hitPoints', new_char_health)
+                Characters.change_stat(Characters(), self.character_name, 'hitPoints', new_char_health)
                 print('{!s} has {!s} HP left. \n'.format(self.character_name, new_char_health))
 
                 if (self.char['hitPoints'] - (self.char['hitPoints'] * aggro_level)) == new_char_health:
