@@ -83,9 +83,10 @@ def conduct_combat():
     monster_name = input('Enter monster name: \n')
     battle = DnD.Battle(character_name, monster_name)
     aggro_level = battle.attack_aggressiveness()
+    damage_type = battle.damage_modifier()
 
     while True:
-        battle.commence_attack(aggro_level)
+        battle.commence_attack(damage_type, aggro_level)
         quit_continue_battle = input('Press enter to continue or \'q\' to quit to menu. \n')
         if quit_continue_battle == 'q':
             return
