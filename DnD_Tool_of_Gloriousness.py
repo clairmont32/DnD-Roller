@@ -41,7 +41,7 @@ def monster_menu_selection(menu_entry):
     monsters = DnD.Monsters()
 
     if menu_entry in range(6, 11) and menu_entry != 7:
-        monster_name = input('Enter monster name: \n').lower()
+        monster_name = input('Enter monster name: \n')
 
         if menu_entry == 6:
             monsters.create_monster(monster_name)
@@ -79,21 +79,27 @@ def roll_die(sides):
 
 def conduct_combat():
     # simulate a battle (still half broken HP updates?
-    character_name = input('Enter character name: \n')
-    monster_name = input('Enter monster name: \n')
+    # character_name = input('Enter character name: \n')
+    # monster_name = input('Enter monster name: \n')
+    character_name, monster_name = 'matt', 'vampireSpawn'   # FOR DEV WORK ONLY #
     battle = DnD.Battle(character_name, monster_name)
     aggro_level = battle.attack_aggressiveness()
     damage_type = battle.damage_modifier()
 
-    while True:
-        battle.commence_attack(damage_type, aggro_level)
-        quit_continue_battle = input('Press enter to continue or \'q\' to quit to menu. \n')
-        if quit_continue_battle == 'q':
-            return
+    if battle.char_init > battle.mons_init:
+            while True:
+                if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
+                    battle.do_character_attack(damage_type)
+                    battle.do_monster_attack(aggro_level)
+                    battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+                    if battle_control == 'q':
+                        break
+                else:
+                    print('Character health aggro level reached.\n\n')
+                    break
 
 
 def main():
-
     # print main menu
     while True:
         print('What would you like to do?')
