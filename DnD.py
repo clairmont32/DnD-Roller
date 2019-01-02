@@ -222,6 +222,7 @@ class Battle:
                 # do a quick health check to ensure it's actually alive
                 if self.char['hitPoints'] <= 0:
                     print('{!s} has been killed! \n'.format(self.character_name))
+                    input('Press enter to continue... \n')
                     main_menu()
 
         except KeyError:
@@ -239,6 +240,7 @@ class Battle:
                 if self.mons['hitPoints'] <= 0:
                     print('{!s} has been killed! \n'.format(self.monster_name))
                     self.reset_monster_health()
+                    main_menu()
 
                     # force reload of __init__ because of an odd condition
                     # where the battle could have been underway
@@ -272,9 +274,9 @@ class Battle:
 
             if aggro_input == 5:
                 custom_aggro = float(input('Enter a health percentage \n'))
-                aggro[aggro_input] = custom_aggro
+                aggro[aggro_input] = custom_aggro / 100
 
-            print('Battle will stop when the character reaches {!s}% of their starting health \n'.format(aggro[aggro_input] * 100))
+            print('Battle will stop when the character reaches {!s}% of their starting health \n'.format(aggro[aggro_input]))
 
             return aggro[aggro_input]
 
@@ -290,13 +292,12 @@ class Battle:
         print('Use which attack modifier?')
         print('1) Strength')
         print('2) Dexterity')
-        print('3) None')
 
         damage_modifiers = {1: "strModifier", 2: "dexModifier"}
         while True:
             try:
                 modifier_selection = int(input())
-                if modifier_selection > 4:
+                if modifier_selection > 2:
                     raise ValueError
 
                 print('Damage modifier is set to: {!s} \n\n'.format(damage_modifiers[modifier_selection]))
@@ -313,26 +314,29 @@ class Battle:
         # roll d20
         random.seed()
         char_hit_roll = random.randint(1, 20)
-
         # attacks are done here
         try:
-            # compare if roll stats are greater than character's armor, subtract damage from players health
-            # perform health check and display new values
-            char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
-            if char_attack_hit > self.mons['armorClass']:
-                print('Character attack roll: {!s}'.format(char_attack_hit))
+            if char_hit_roll < 20:
+                # compare if roll stats are greater than character's armor, subtract damage from players health
+                # perform health check and display new values
+                char_attack_hit = char_hit_roll + self.char['attackHit'] + self.char['proficiency']
+                if char_attack_hit > self.mons['armorClass']:
+                    print('Character attack roll: {!s}'.format(char_attack_hit))
 
-                # calculate attack damage
-                attack_roll = random.randint(1, self.char['damageDice']) + self.char[damage_type]
-                print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, attack_roll))
+                    # calculate attack damage
+                    damage_roll = random.randint(1, self.char['damageDice']) + self.char[damage_type]
+                    print('{!s} hit {!s} for {!s} damage'.format(self.character_name, self.monster_name, damage_roll))
+                    new_mons_health = self.mons['hitPoints'] - damage_roll
+                    # failed it
+                else:
+                    print('{!s} did not hit above {!s}\'s armor class! \n'.format(self.character_name, self.monster_name))
 
+            elif char_hit_roll == 20:
+                crit_damage_roll = (self.char['damageDice'] * 2) + self.char[damage_type]
                 # calculate health impacts of monster
-                new_mons_health = self.mons['hitPoints'] - attack_roll
-                Monsters.change_stat(Monsters(), self.monster_name, 'hitPoints', new_mons_health)
+                new_mons_health = self.mons['hitPoints'] - crit_damage_roll
 
-            # failed it
-            else:
-                print('{!s} did not hit above {!s}\'s armor class! \n'.format(self.character_name, self.monster_name))
+            Monsters.change_stat(Monsters(), self.monster_name, 'hitPoints', new_mons_health)
 
         # if KeyError, a stat is missing from a profile somewhere
         except KeyError as ker:
