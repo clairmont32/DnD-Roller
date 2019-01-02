@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-import os
+import sys
 import DnD
-import json
 import random
 
 
@@ -52,7 +51,7 @@ def monster_menu_selection(menu_entry):
         if menu_entry == 9:
             while True:
                 try:
-                    print(monsters.list_monster_stats(monster_name))
+                    monsters.list_monster_stats(monster_name)
                     monster_stat = input('Enter stat name: \n')
                     new_stat = int(input('Enter new stat value: \n'))
                     monsters.change_stat(monster_name, monster_stat, new_stat)
@@ -71,47 +70,61 @@ def monster_menu_selection(menu_entry):
 
 def roll_die(sides):
     if sides > 0:
+        random.seed()
         print(random.randint(1, sides))
 
     else:
         print('Enter an integer greater than 0!')
 
 
-def conduct_combat():
-    # simulate a battle (still half broken HP updates?
-    # character_name = input('Enter character name: \n')
-    # monster_name = input('Enter monster name: \n')
-    character_name, monster_name = 'matt', 'vampireSpawn'   # FOR DEV WORK ONLY #
-    battle = DnD.Battle(character_name, monster_name)
-    aggro_level = battle.attack_aggressiveness()
-    damage_type = battle.damage_modifier()
+# perform a single attack with only damage_type
+def single_attack(battle, damage_type):
+    battle.do_character_attack(damage_type)
+    if battle.mons['hitPoints'] <= 0:
+        battle.reset_monster_health()
 
+
+# simulate a full battle
+def conduct_combat(battle, damage_type, aggro_level):
     if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
-        print('{!s} wins the initiative check!'.format(character_name))
+        print('{!s} wins the initiative check!'.format(battle.character_name))
+
         while True:
             if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
-                battle.do_character_attack(damage_type)
-                battle.do_monster_attack(aggro_level)
-                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
-                if battle_control == 'q':
-                    break
+                # obtain the numAttacks stats and perform that many attacks
+                for a in range(battle.char['numAttacks']):
+                    battle.do_character_attack(damage_type)
+                for b in range(battle.mons['numAttacks']):
+                    battle.do_monster_attack(aggro_level)
+
             else:
                 print('Character health aggro level reached.\n\n')
                 input('Press enter to continue')
                 break
 
+            # to continue or not to continue. that is the question.
+            battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+            if battle_control == 'q':
+                break
+
     elif battle.char_init < battle.mons_init:
-        print('{!s} wins the initiative check!'.format(character_name))
+        print('{!s} wins the initiative check!'.format(battle.monster_name))
         while True:
             if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
-                battle.do_monster_attack(aggro_level)
-                battle.do_character_attack(damage_type)
-                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
-                if battle_control == 'q':
-                    break
+
+                for a in range(battle.mons['numAttacks']):
+                    battle.do_monster_attack(aggro_level)
+                for b in range(battle.char['numAttacks']):
+                    battle.do_character_attack(damage_type)
+
             else:
                 print('Character health aggro level reached.\n\n')
                 input('Press enter to continue')
+                break
+
+            # to continue or not to continue. that is the question.
+            battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+            if battle_control == 'q':
                 break
 
     battle.reset_monster_health()
@@ -121,7 +134,6 @@ def main():
     # print main menu
     while True:
         print('What would you like to do?')
-
         print('1) Add a new character')
         print('2) List all characters')
         print('3) List a character\'s stats')
@@ -134,7 +146,9 @@ def main():
         print('10) Remove a monster')
         print('11) Roll a single dX')
         print('12) Roll a XdX')
-        print('13) Battle simulator')
+        print('13) Single attack (no initiative check, no attack hits stat)')
+        print('14) Single attack (no initiative check, use attack hit stat)')
+        print('15) Battle simulator')
         print('q) Quit \n')
 
         menu_entry = input()
@@ -175,17 +189,37 @@ def main():
                     try:
                         total_dice = int(input('Number of dice to throw? \n'))
                         sides = int(input('Enter amount of sides: \n'))
+                        break
+
                     except ValueError:
                         print('Enter an integer')
-                    break
 
                 while total_dice > 0:
                     roll_die(sides)
                     total_dice -= 1
-                input('Press enter to return to the menu. \n\n')
 
-            elif menu_entry == 13:
-                conduct_combat()
+                input('Press enter to continue... \n\n')
+
+            elif menu_entry >= 13:
+                # character_name = input('Enter character name: \n')
+                # monster_name = input('Enter monster name: \n')
+                character_name, monster_name = 'matt', 'vampireSpawn'  # FOR DEV WORK ONLY #
+                battle = DnD.Battle(character_name, monster_name)
+                damage_type = battle.damage_modifier()
+                aggro_level = battle.attack_aggressiveness()
+
+                if menu_entry == 13:
+                    single_attack(battle, damage_type)
+
+                elif menu_entry == 14:
+                    num_attacks = battle.char['numAttacks']
+                    print('Conducting {!s} attacks...'.format(num_attacks))
+                    for x in range(num_attacks):
+                        print('Attack {0}'.format(x))
+                        single_attack(battle, damage_type)
+
+                elif menu_entry == 15:
+                    conduct_combat(battle, damage_type, aggro_level)
 
 
 if __name__ == '__main__':

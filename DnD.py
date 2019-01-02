@@ -140,15 +140,13 @@ class Monsters:
 
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
-            return
 
-        input('Press enter to continue. \n')
+        input('Press enter to continue... \n')
 
     # lists current monster names
     def list_monsters(self):
         [print(name) for name in self.monsters.keys()]
-
-        input('Press enter to continue. \n')
+        input('Press enter to continue... \n')
 
     # prompt for monster stats
     def add_stats(self, monster_name):
@@ -162,8 +160,8 @@ class Monsters:
                 damage_dice = int(input('Damage die roll (1dX): \n'))
                 num_attacks = int(input('Enter number of attacks: \n'))
                 default_hp = int(input('Enter default HP'))
-
                 break
+
             except ValueError:
                 print('You didn\'t enter a number!')
 
@@ -178,7 +176,7 @@ class Monsters:
 
         print('\n')
         print('Stats added!')
-        input('Press enter to continue. \n')
+        input('Press enter to continue... \n')
 
     # lists stats for a given monster
     def list_monster_stats(self, monster_name):
@@ -189,12 +187,13 @@ class Monsters:
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
 
-        input('Press enter to continue. \n')
+        input('Press enter to continue... \n')
 
     # updates a current stat for a named monster
     def change_stat(self, monster_name, stat, new_stat):
         try:
             self.monsters[monster_name].update({stat: new_stat})
+
         except KeyError as ker:
             print('Could not update {!s}'.format(new_stat))
             print(ker)
@@ -204,7 +203,7 @@ class Monsters:
             monsters_file.write(json.dumps(self.monsters))
 
         print('{!s} {!s} updated to {!s}.'.format(monster_name, stat, new_stat))
-        input('Press enter to continue. \n')
+        input('Press enter to continue... \n')
 
 
 class Battle:
@@ -299,6 +298,7 @@ class Battle:
                 modifier_selection = int(input())
                 if modifier_selection > 4:
                     raise ValueError
+
                 print('Damage modifier is set to: {!s} \n\n'.format(damage_modifiers[modifier_selection]))
                 return damage_modifiers[modifier_selection]
 

@@ -1,1 +1,1 @@
-{"vampireSpawn": {"numAttacks": 2, "attackHit": 6, "damageBonus": 3, "initiative": 0, "defaultHP": 20, "damageDice": 4, "armorClass": 15, "hitPoints": 4}}
+{"vampireSpawn": {"armorClass": 15, "hitPoints": 100, "numAttacks": 2, "damageBonus": 3, "initiative": 0, "damageDice": 4, "defaultHP": 20, "attackHit": 2}}
