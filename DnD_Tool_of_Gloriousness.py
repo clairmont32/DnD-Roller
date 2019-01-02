@@ -87,8 +87,9 @@ def single_attack(battle, damage_type):
 def conduct_combat(battle, damage_type, aggro_level):
     if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
         print('{!s} wins the initiative check!'.format(battle.character_name))
+        char_starting_hp = battle.char['hitPoints']
         while True:
-            if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
+            if battle.char['hitPoints'] > (char_starting_hp * aggro_level):
                 # obtain the numAttacks stats and perform that many attacks
                 for a in range(battle.char['numAttacks']):
                     battle.do_character_attack(damage_type)
