@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import sys
 import DnD
 import random
 
@@ -88,7 +87,6 @@ def single_attack(battle, damage_type):
 def conduct_combat(battle, damage_type, aggro_level):
     if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
         print('{!s} wins the initiative check!'.format(battle.character_name))
-
         while True:
             if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
                 # obtain the numAttacks stats and perform that many attacks
@@ -97,34 +95,34 @@ def conduct_combat(battle, damage_type, aggro_level):
                 for b in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
 
+                # to continue or not to continue. that is the question.
+                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+                if battle_control == 'q':
+                    break
+
             else:
                 print('Character health aggro level reached.\n\n')
-                input('Press enter to continue')
-                break
-
-            # to continue or not to continue. that is the question.
-            battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
-            if battle_control == 'q':
+                input('Press enter to continue...')
                 break
 
     elif battle.char_init < battle.mons_init:
         print('{!s} wins the initiative check!'.format(battle.monster_name))
         while True:
             if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
-
+                # obtain the numAttacks stats and perform that many attacks
                 for a in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
                 for b in range(battle.char['numAttacks']):
                     battle.do_character_attack(damage_type)
 
+                # to continue or not to continue. that is the question.
+                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+                if battle_control == 'q':
+                    break
+
             else:
                 print('Character health aggro level reached.\n\n')
-                input('Press enter to continue')
-                break
-
-            # to continue or not to continue. that is the question.
-            battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
-            if battle_control == 'q':
+                input('Press enter to continue...')
                 break
 
     battle.reset_monster_health()
