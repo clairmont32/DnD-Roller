@@ -86,17 +86,35 @@ def conduct_combat():
     aggro_level = battle.attack_aggressiveness()
     damage_type = battle.damage_modifier()
 
-    if battle.char_init > battle.mons_init:
-            while True:
-                if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
-                    battle.do_character_attack(damage_type)
-                    battle.do_monster_attack(aggro_level)
-                    battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
-                    if battle_control == 'q':
-                        break
-                else:
-                    print('Character health aggro level reached.\n\n')
+    if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
+        print('{!s} wins the initiative check!'.format(character_name))
+        while True:
+            if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
+                battle.do_character_attack(damage_type)
+                battle.do_monster_attack(aggro_level)
+                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+                if battle_control == 'q':
                     break
+            else:
+                print('Character health aggro level reached.\n\n')
+                input('Press enter to continue')
+                break
+
+    elif battle.char_init < battle.mons_init:
+        print('{!s} wins the initiative check!'.format(character_name))
+        while True:
+            if battle.char['hitPoints'] > (battle.char['hitPoints'] * aggro_level):
+                battle.do_monster_attack(aggro_level)
+                battle.do_character_attack(damage_type)
+                battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
+                if battle_control == 'q':
+                    break
+            else:
+                print('Character health aggro level reached.\n\n')
+                input('Press enter to continue')
+                break
+
+    battle.reset_monster_health()
 
 
 def main():

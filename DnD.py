@@ -2,6 +2,7 @@
 import os
 import json
 import random
+from DnD_Tool_of_Gloriousness import main as main_menu
 
 
 # means of interacting with characters in characters.json
@@ -64,10 +65,9 @@ class Characters:
 
         # add to json
         self.characters[character_name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
-                                 "attackHit": attack_hit, "damageDice": damage_dice, "strModifier": str_modifier,
-                                 "dexModifier": dex_modifier, "cure": cure, "numAttacks": num_attacks,
-                                 "proficiency": proficiency
-                                 }
+                                           "attackHit": attack_hit, "damageDice": damage_dice,
+                                           "strModifier": str_modifier, "dexModifier": dex_modifier, "cure": cure,
+                                           "numAttacks": num_attacks, "proficiency": proficiency}
 
         with open('characters.json', 'w') as characters_file:
             characters_file.truncate(0)
@@ -85,7 +85,8 @@ class Characters:
 
         except KeyError:
             print('{!s} does not have a character profile saved!'.format(character_name))
-            return
+            input('Press enter to continue...\n')
+            main_menu()
 
         input('Press enter to continue. \n')
 
@@ -96,6 +97,7 @@ class Characters:
         except KeyError as ker:
             print('Could not update {!s}'.format(new_stat))
             print(ker)
+            main_menu()
 
         with open('characters.json', 'w') as characters_file:
             characters_file.truncate(0)
@@ -159,6 +161,7 @@ class Monsters:
                 attack_hit = int(input('Enter attack hit: \n'))
                 damage_dice = int(input('Damage die roll (1dX): \n'))
                 num_attacks = int(input('Enter number of attacks: \n'))
+                default_hp = int(input('Enter default HP'))
 
                 break
             except ValueError:
@@ -166,7 +169,8 @@ class Monsters:
 
         # add to json
         self.monsters[monster_name] = {"armorClass": armor_class, "initiative": initiative, "hitPoints": hit_points,
-                                 "attackHit": attack_hit, "damageDice": damage_dice, "numAttacks": num_attacks}
+                                       "attackHit": attack_hit, "damageDice": damage_dice, "numAttacks": num_attacks,
+                                       "defaultHP": default_hp}
 
         with open('monsters.json', 'w') as monsters_file:
             monsters_file.truncate(0)
@@ -181,6 +185,7 @@ class Monsters:
         try:
             for stat, value in self.monsters[monster_name].items():
                 print(stat + ':', value)
+
         except KeyError:
             print('{!s} does not have a monster profile saved!'.format(monster_name))
 
@@ -218,14 +223,12 @@ class Battle:
                 # do a quick health check to ensure it's actually alive
                 if self.char['hitPoints'] <= 0:
                     print('{!s} has been killed! \n'.format(self.character_name))
-                    self.reset_monster_health()
-
-                    exit()
+                    main_menu()
 
         except KeyError:
             print('{!s} does not exist. Please ensure the spelling/capitalization is '
                   'correct or reference the character list'.format(character_name))
-            exit()
+            main_menu()
 
         try:
             with open('monsters.json', 'r') as monsters_file:
@@ -236,12 +239,16 @@ class Battle:
                 # do a quick health check to ensure it's actually alive
                 if self.mons['hitPoints'] <= 0:
                     print('{!s} has been killed! \n'.format(self.monster_name))
-                    exit()
+                    self.reset_monster_health()
+
+                    # force reload of __init__ because of an odd condition
+                    # where the battle could have been underway
+                    self.__init__(character_name, monster_name)
 
         except KeyError:
             print('{!s} does not exist. Please ensure the spelling/capitalization is '
                   'correct or reference the monster list'.format(monster_name))
-            exit()
+            main_menu()
 
     @staticmethod
     # prompt for a predefined aggro level or enter a custom one
@@ -250,18 +257,25 @@ class Battle:
         print('1) Safe - 75% health')
         print('2) Balanced - 50% health')
         print('3) Aggressive - 25% health')
-        print('4) Custom - DM entered')
+        print('4) Fight to the death!')
+        print('5) Custom - DM entered')
 
         # do an input check
         try:
-            aggro_input = int(input())
-            aggro = {1: .75, 2: .50, 3: .25}
+            while True:
+                aggro_input = int(input())
+                if aggro_input < 1 or aggro_input > 5:
+                    print('Enter a number between 1 and 4')
+                else:
+                    break
 
-            if aggro_input == 4:
+            aggro = {1: .75, 2: .50, 3: .25, 4: 0}
+
+            if aggro_input == 5:
                 custom_aggro = float(input('Enter a health percentage \n'))
                 aggro[aggro_input] = custom_aggro
 
-            print('Battle will stop when the character reaches {!s} of their starting health \n'.format(aggro[aggro_input]))
+            print('Battle will stop when the character reaches {!s}% of their starting health \n'.format(aggro[aggro_input] * 100))
 
             return aggro[aggro_input]
 
@@ -300,10 +314,7 @@ class Battle:
         random.seed()
         char_hit_roll = random.randint(1, 20)
 
-        if self.char['hitPoints'] <= 0:
-            print('{!s} has been killed! \n'.format(self.character_name))
-            exit()
-
+        # attacks are done here
         try:
             # compare if roll stats are greater than character's armor, subtract damage from players health
             # perform health check and display new values
@@ -326,7 +337,8 @@ class Battle:
         # if KeyError, a stat is missing from a profile somewhere
         except KeyError as ker:
             print('A character stat seems to be missing.')
-            exit(print(ker))
+            print(ker)
+            main_menu()
 
     # perform single monster attack
     def do_monster_attack(self, aggro_level):
@@ -337,6 +349,7 @@ class Battle:
         random.seed()
         mons_hit_roll = random.randint(1, 20)
 
+        # attacks are done here
         try:
             # compare if roll stats are greater than self.character's armor, subtract damage from players health
             # perform health check and display new values
@@ -352,7 +365,7 @@ class Battle:
 
                 if (self.char['hitPoints'] - (self.char['hitPoints'] * aggro_level)) == new_char_health:
                     print('Character\'s desired aggro level health reached! \n')
-                    exit()
+                    main_menu()
 
             # failed it
             else:
@@ -361,12 +374,21 @@ class Battle:
         # if KeyError, a stat is missing from a profile somewhere
         except KeyError as ker:
             print('A monster stat seems to be missing.')
-            exit(print(ker))
+            print(ker)
+            main_menu()
 
     # prompt/perform a health reset of the monster for next time
     def reset_monster_health(self):
         print('Do you want to reset {!s}\'s health to default?'.format(self.monster_name))
-        yes_no = input('Enter "y" or "n"  \n')  # we prompt for n but do nothing below if its entered since that's moot
-        if yes_no == 'y':
-            default_hp = self.mons['defaultHP']
-            Monsters.change_stat(self.monster_name, 'hitPoints', default_hp)
+        while True:
+            yes_no = input('Enter "y" or "n"  \n')  # we prompt for n but do nothing below if its entered since that's moot
+            if yes_no == 'y':
+                default_hp = self.mons['defaultHP']
+                Monsters.change_stat(Monsters(), self.monster_name, 'hitPoints', default_hp)
+                break
+
+            elif yes_no == 'n':
+                break
+
+            else:
+                continue
