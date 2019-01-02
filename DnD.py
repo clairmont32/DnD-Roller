@@ -334,6 +334,7 @@ class Battle:
             elif char_hit_roll == 20:
                 print('***CRITICAL DAMAGE ROLL***')
                 crit_damage_roll = (self.char['damageDice'] * 2) + self.char[damage_type]
+                print('Critical damage roll hit for: {!s}'.format(crit_damage_roll))
                 # calculate health impacts of monster
                 new_mons_health = self.mons['hitPoints'] - crit_damage_roll
 
