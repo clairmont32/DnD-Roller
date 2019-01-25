@@ -77,56 +77,26 @@ def roll_die(sides):
 
 
 # perform a single attack with only damage_type
-def single_attack(battle, damage_type):
+def single_attack(battle, damage_type, roll_type):
     battle.do_character_attack(damage_type)
     if battle.mons['hitPoints'] <= 0:
         battle.reset_monster_health()
 
 
-# prompt for advantage type
-def advantage():
+def advantage_type():
     while True:
         try:
             adv_type = int(input('1) Advantaged'
                                  '\n2) Disadvantaged'
                                  '\n3) None\n'))
+            return adv_type
         except TypeError:
             print('Enter 1, 2, or 0 for the advantage type')
-            advantage()
-
-        # seed random so we have more pseudo-random results
-        random.seed()
-        roll1 = random.randint(1, 20)
-        random.seed()
-        roll2 = random.randint(1, 20)
-        if adv_type == 0:
-            char_attack_roll = random.randint(1, 20)
-
-        elif adv_type == 1:
-            print('Rolled for advantage...')
-            if roll1 >= roll2:
-                print('Roll1: {0} is greater than or equal to Roll2: {1}'.format(roll1, roll2))
-                char_attack_roll = roll1
-
-            elif roll2 > roll1:
-                print('Roll2: {0} is greater than Roll1: {1}'.format(roll2, roll1))
-                char_attack_roll = roll2
-
-        elif adv_type == 2:
-            print('Rolled for advantage...')
-            if roll1 <= roll2:
-                print('Roll1: {0} is less than Roll2: {1}'.format(roll1, roll2))
-                char_attack_roll = roll1
-
-            elif roll2 < roll1:
-                print('Roll2: {0} is less than Roll1: {1}'.format(roll2, roll1))
-                char_attack_roll = roll2
-
-        return char_attack_roll
+            advantage_type()
 
 
 # simulate a full battle
-def conduct_combat(battle, damage_type, aggro_level, roll_type):
+def conduct_combat(battle, damage_type, aggro_level):
     char_starting_hp = battle.char['hitPoints']  # for aggro level checks
 
     if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
@@ -135,7 +105,7 @@ def conduct_combat(battle, damage_type, aggro_level, roll_type):
             if battle.char['hitPoints'] > (char_starting_hp * aggro_level):
                 # obtain the numAttacks stats and perform that many attacks
                 for a in range(battle.char['numAttacks']):
-                    battle.do_character_attack(damage_type, roll_type)
+                    battle.do_character_attack(damage_type)
                 for b in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
 
@@ -157,7 +127,7 @@ def conduct_combat(battle, damage_type, aggro_level, roll_type):
                 for a in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
                 for b in range(battle.char['numAttacks']):
-                    battle.do_character_attack(damage_type, roll_type)
+                    battle.do_character_attack(damage_type)
 
                 # to continue or not to continue. that is the question.
                 battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
@@ -246,20 +216,20 @@ def main():
                 # character_name = input('Enter character name: \n')
                 # monster_name = input('Enter monster name: \n')
                 character_name, monster_name = 'matt', 'vampireSpawn'  # FOR DEV WORK ONLY #
-                battle = DnD.Battle(character_name, monster_name)
-                roll_type = advantage()  # select advantaged, disadvantaged, or normal attack
+                advantage = advantage_type()  # select advantaged, disadvantaged, or normal attack
+                battle = DnD.Battle(character_name, monster_name, advantage)
                 damage_type = battle.damage_modifier()
                 aggro_level = battle.attack_aggressiveness()
 
                 if menu_entry == 13:
-                    single_attack(battle, damage_type)
+                    single_attack(battle, damage_type, advantage)
 
                 elif menu_entry == 14:
                     num_attacks = battle.char['numAttacks']
                     print('Conducting {!s} attacks...'.format(num_attacks))
                     for x in range(num_attacks):
                         print('Attack {0}'.format(x))
-                        single_attack(battle, damage_type)
+                        single_attack(battle, damage_type, advantage)
 
                 elif menu_entry == 15:
                     conduct_combat(battle, damage_type, aggro_level)

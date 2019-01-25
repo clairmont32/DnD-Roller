@@ -212,6 +212,7 @@ class Battle(object):
         super(Monsters)
         self.character_name = character_name
         self.monster_name = monster_name
+        self.advantage = advantage
 
         try:
             with open('characters.json', 'r') as characters_file:
@@ -244,7 +245,7 @@ class Battle(object):
 
                     # force reload of __init__ because of an odd condition
                     # where the battle could have been underway
-                    self.__init__(character_name, monster_name)
+                    self.__init__(character_name, monster_name, self.advantage)
 
         except KeyError:
             print('{!s} does not exist. Please ensure the spelling/capitalization is '
@@ -307,10 +308,42 @@ class Battle(object):
                 print('Enter a valid number')
                 Battle.damage_modifier()
 
-    def do_character_attack(self, damage_type, char_hit_roll):
-        # refresh character/monster profiles so we dont have to reload them manually
-        self.__init__(self.character_name, self.monster_name)
+    # prompt for advantage type
+    def char_attack_roll(self):
+        # seed random so we have more pseudo-random results
+        random.seed()
+        roll1 = random.randint(1, 20)
+        random.seed()
+        roll2 = random.randint(1, 20)
+        if self.advantage == 0:
+            attack_roll = random.randint(1, 20)
 
+        elif self.advantage == 1:
+            print('Rolled for advantage...')
+            if roll1 >= roll2:
+                print('Roll1: {0} is greater than or equal to Roll2: {1}\n'.format(roll1, roll2))
+                attack_roll = roll1
+
+            elif roll2 > roll1:
+                print('Roll2: {0} is greater than Roll1: {1}\n'.format(roll2, roll1))
+                attack_roll = roll2
+
+        elif self.advantage == 2:
+            print('Rolled for advantage...')
+            if roll1 <= roll2:
+                print('Roll1: {0} is less than Roll2: {1}\n'.format(roll1, roll2))
+                attack_roll = roll1
+
+            elif roll2 < roll1:
+                print('Roll2: {0} is less than Roll1: {1}\n'.format(roll2, roll1))
+                attack_roll = roll2
+
+        return attack_roll
+
+    def do_character_attack(self, damage_type):
+        # refresh character/monster profiles so we dont have to reload them manually
+        self.__init__(self.character_name, self.monster_name, self.advantage)
+        char_hit_roll = Battle.char_attack_roll(self)
         try:
             if char_hit_roll < 20:
                 # compare if roll stats are greater than character's armor, subtract damage from players health
@@ -345,7 +378,7 @@ class Battle(object):
     # perform single monster attack
     def do_monster_attack(self, aggro_level):
         # refresh character/monster profiles so we dont have to reload them manually
-        self.__init__(self.character_name, self.monster_name)
+        self.__init__(self.character_name, self.monster_name, self.advantage)
 
         # roll d20
         random.seed()
