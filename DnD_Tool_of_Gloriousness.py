@@ -83,8 +83,50 @@ def single_attack(battle, damage_type):
         battle.reset_monster_health()
 
 
+# prompt for advantage type
+def advantage():
+    while True:
+        try:
+            adv_type = int(input('1) Advantaged'
+                                 '\n2) Disadvantaged'
+                                 '\n3) None\n'))
+        except TypeError:
+            print('Enter 1, 2, or 0 for the advantage type')
+            advantage()
+
+        # seed random so we have more pseudo-random results
+        random.seed()
+        roll1 = random.randint(1, 20)
+        random.seed()
+        roll2 = random.randint(1, 20)
+        if adv_type == 0:
+            char_attack_roll = random.randint(1, 20)
+
+        elif adv_type == 1:
+            print('Rolled for advantage...')
+            if roll1 >= roll2:
+                print('Roll1: {0} is greater than or equal to Roll2: {1}'.format(roll1, roll2))
+                char_attack_roll = roll1
+
+            elif roll2 > roll1:
+                print('Roll2: {0} is greater than Roll1: {1}'.format(roll2, roll1))
+                char_attack_roll = roll2
+
+        elif adv_type == 2:
+            print('Rolled for advantage...')
+            if roll1 <= roll2:
+                print('Roll1: {0} is less than Roll2: {1}'.format(roll1, roll2))
+                char_attack_roll = roll1
+
+            elif roll2 < roll1:
+                print('Roll2: {0} is less than Roll1: {1}'.format(roll2, roll1))
+                char_attack_roll = roll2
+
+        return char_attack_roll
+
+
 # simulate a full battle
-def conduct_combat(battle, damage_type, aggro_level):
+def conduct_combat(battle, damage_type, aggro_level, roll_type):
     char_starting_hp = battle.char['hitPoints']  # for aggro level checks
 
     if battle.char_init > battle.mons_init or battle.char_init == battle.mons_init:
@@ -93,7 +135,7 @@ def conduct_combat(battle, damage_type, aggro_level):
             if battle.char['hitPoints'] > (char_starting_hp * aggro_level):
                 # obtain the numAttacks stats and perform that many attacks
                 for a in range(battle.char['numAttacks']):
-                    battle.do_character_attack(damage_type)
+                    battle.do_character_attack(damage_type, roll_type)
                 for b in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
 
@@ -115,7 +157,7 @@ def conduct_combat(battle, damage_type, aggro_level):
                 for a in range(battle.mons['numAttacks']):
                     battle.do_monster_attack(aggro_level)
                 for b in range(battle.char['numAttacks']):
-                    battle.do_character_attack(damage_type)
+                    battle.do_character_attack(damage_type, roll_type)
 
                 # to continue or not to continue. that is the question.
                 battle_control = input('Press enter to continue or \'q\' to quit to menu. \n')
@@ -205,6 +247,7 @@ def main():
                 # monster_name = input('Enter monster name: \n')
                 character_name, monster_name = 'matt', 'vampireSpawn'  # FOR DEV WORK ONLY #
                 battle = DnD.Battle(character_name, monster_name)
+                roll_type = advantage()  # select advantaged, disadvantaged, or normal attack
                 damage_type = battle.damage_modifier()
                 aggro_level = battle.attack_aggressiveness()
 
