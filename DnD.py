@@ -206,12 +206,13 @@ class Monsters:
         input('Press enter to continue... \n')
 
 
-class Battle:
-    def __init__(self, character_name, monster_name):
+class Battle(object):
+    def __init__(self, character_name, monster_name, advantage):
         super(Characters)
         super(Monsters)
         self.character_name = character_name
         self.monster_name = monster_name
+        self.advantage = advantage
 
         try:
             with open('characters.json', 'r') as characters_file:
@@ -307,14 +308,49 @@ class Battle:
                 print('Enter a valid number')
                 Battle.damage_modifier()
 
-    def do_character_attack(self, damage_type):
+    # determine what type of roll to use
+    @property
+    def attack_roll(self):
+        # seed random so we have more pseudo-random results
+        random.seed()
+        roll1 = random.randint(1, 20)
+        random.seed()
+        roll2 = random.randint(1, 20)
+        try:
+
+            if self.advantage == 0:
+                char_attack_roll = random.randint(1, 20)
+
+            elif self.advantage == 1:
+                print('Rolled for advantage...')
+                if roll1 > roll2 or roll1 == roll2:
+                    print('Roll1: {0} is greater than or equal to Roll2: {1}'.format(roll1, roll2))
+                    char_attack_roll = roll1
+
+                elif roll2 > roll1:
+                    print('Roll2: {0} is greater than Roll1: {1}'.format(roll2, roll1))
+                    char_attack_roll = roll2
+
+            elif self.advantage == 2:
+                print('Rolled for advantage...')
+                if roll1 < roll2 or roll1 == roll2:
+                    print('Roll1: {0} is less than Roll2: {1}'.format(roll1, roll2))
+                    char_attack_roll = roll1
+
+                elif roll2 < roll1:
+                    print('Roll2: {0} is less than Roll1: {1}'.format(roll2, roll1))
+                    char_attack_roll = roll2
+
+            return char_attack_roll
+
+        except ValueError:
+            print('Enter a correct advantage selector')
+            self.attack_roll()
+
+    def do_character_attack(self, char_hit_roll, damage_type):
         # refresh character/monster profiles so we dont have to reload them manually
         self.__init__(self.character_name, self.monster_name)
 
-        # roll d20
-        random.seed()
-        char_hit_roll = random.randint(1, 20)
-        # attacks are done here
         try:
             if char_hit_roll < 20:
                 # compare if roll stats are greater than character's armor, subtract damage from players health
