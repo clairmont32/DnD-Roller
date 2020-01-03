@@ -1,6 +1,6 @@
 ## DnD DM Tool ##
 
-A text-based character stat manager and battle simulator that is being developed for a friend's discord D&D game. Character stat management is done via json files (characters.json/monsters.json). Direct manipulation of these files is *NOT* advised and is easily done through the script.
+A text-based character stat manager and battle simulator that I developed for a friend's discord D&D game. Character stat management is done via json files (characters.json/monsters.json). Direct manipulation of these files is *NOT* advised and is easily done through the script.
 
 #### Battle ####
 Battle is done in a modular form by doing each action of the battle as a separate method or function. Initiative checks are performed at the start of battle, with damage bonuses and a lost health limitor as additional options. Health points are automatically deducted upon calculation to ensure that monsters, players, or NPCs can be killed mid-battle. 
@@ -9,7 +9,7 @@ The battle simulator does not continually calculate attacks and apply damage. To
 
 ##### SPELLS ARE NOT IMPLEMENTED CURRENTLY DUE TO THE EXTENSIVE AMOUNT OF DATA AND VARYING SITUATIONS THEY MAY CALL FOR #####
 
-Single attacks will be added shortly to account for various roleplaying circumstances (ambushes, stealth kills, punches, etc).
+Single attacks are available to account for various roleplaying circumstances (ambushes, stealth kills, punches, etc).
 
 #### Feature List ####
  - Add a new character
